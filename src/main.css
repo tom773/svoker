@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    position: relative;
+    box-sizing: border-box;
+}
+
+html, body{
+    height: 100vh;
+    background: linear-gradient(-45deg, rgba(var(--color-primary-700)/1), rgba(var(--color-secondary-700)/1), rgba(var(--color-tertiary-700)/1), rgba(var(--color-surface-700)/1));
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    backdrop-filter: brightness(0.8);
+    font-family: 'jbm';
+}
+
+@font-face {
+    font-family: 'jbm';
+    src: url('./jbm.ttf');
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
