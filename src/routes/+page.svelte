@@ -1,6 +1,7 @@
 <script lang="ts">
     import Welcome from './Welcome.svelte'; 
     import '../main.css';
+
 </script>
 
 <main>
