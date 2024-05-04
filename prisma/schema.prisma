@@ -16,6 +16,7 @@ model Users {
 
 model Session {
   id     String @id @default(uuid())
-  user   Users   @relation(references: [id], fields: [userId])
   userId String
+  user   Users   @relation(references: [id], fields: [userId])
+  expiresAt DateTime
 }

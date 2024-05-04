@@ -1,5 +1,5 @@
 // routes/signup/+page.server.ts
-import { lucia } from "../../auth";
+//import { lucia } from "../../auth";
 import { redirect } from "@sveltejs/kit";
 import { hash } from "@node-rs/argon2";
 import { prisma } from "$lib/prisma"
@@ -31,10 +31,8 @@ export const actions: Actions = {
 			    password: passwordHash,
             }
 		});
+
         
-        const session = await lucia.createSession(username, {});
-        const sessionCookie = lucia.createSessionCookie(session.id);
-        document.cookie = sessionCookie.name + "=" + sessionCookie.value + "; path=/; secure; SameSite=Strict";
 
 		redirect(302, "/");
 	}

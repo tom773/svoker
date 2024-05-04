@@ -4,11 +4,21 @@
 
 </script>
 
+<div class="auth">
+    <a href="/signin"><button type="button" class="btn variant-filled">Sign In</button></a>
+</div>
 <main>
     <Welcome />
 </main>
 
 <style>
+    .auth{
+        text-align: right;
+        right: 0;
+        padding: 1rem;
+        color: #f3f3f3;
+        position: absolute;
+    }
 
     main{
         display: flex;
