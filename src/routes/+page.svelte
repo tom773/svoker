@@ -17,6 +17,7 @@
         right: 0;
         padding: 1rem;
         color: #f3f3f3;
+        z-index: 100;
         position: absolute;
     }
 

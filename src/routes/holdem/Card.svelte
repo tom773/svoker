@@ -2,16 +2,14 @@
     export let drawn: string;
 </script>
 
-<div class="tablecard">
-    
+<div class="usercard">
     <img src="./{drawn}.png" alt="card">
-
 </div>
 
 <style>
-    .tablecard{
+    .usercard{
        width: 100px; 
        height: 150px;
-       padding: 3px;
+       rotate: var(--rot);
     }
 </style>
