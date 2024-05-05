@@ -8,6 +8,7 @@
     import River from './River.svelte';
     import { PlayerType } from './players';
     import Player from './Player.svelte';
+    import YourChips from './YourChips.svelte';
 
     let drawn: string[] = [];
     let flop: string[] = [];
@@ -67,10 +68,8 @@
 
     }
     let players = [];
-    let playerone = new PlayerType();
-    playerone.name = "Jack";
-    playerone.chips = 10000;
-    playerone.avatar= "avatar.webp";
+    let you = new PlayerType("Tommy", 12960, "avatar.webp");
+    let playerone = new PlayerType("Jack", 32645, "avatar.webp");
     players.push(playerone);
 
     function reset() {
@@ -133,14 +132,16 @@
                 {/if}
             </div>
         {/each}
+
     </div>
+    <YourChips you={you} />
 </div>
 <style>
 
 .cardset{
     position: absolute;
     bottom: 0;
-    left: 0;
+    left: 10px;
     filter: brightness(0.8);
     padding: 10px;
 }
