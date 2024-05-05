@@ -14,6 +14,7 @@
     let flop: string[] = [];
     let turn: string[] = [];
     let river: string[] = [];
+    let bet: number = 0;
 
     let cards = [...cardset];
     function dealCards() {
@@ -80,6 +81,9 @@
         cards = [...cardset];
         currentPhase = -1;
     }
+    function betfunc() {
+        console.log(bet);
+    }
 
 </script>
 <div class="flex w-full h-full items-center justify-center flex-col">
@@ -94,55 +98,68 @@
             <div class="flex flex-row">
                 <Stack />
                 {#key flop}
-                    <div in:fade={{delay: 200, duration: 1000}} id="flop" style="">
+                    <div in:fade={{delay: 200, duration: 200}} id="flop" style="">
                         <Flop flop={flop} />
                     </div>
                 {/key}
                 {#key turn}
-                    <div in:fade={{delay: 200, duration: 1000}} id="turn" style="">
+                    <div in:fade={{delay: 200, duration: 200}} id="turn" style="">
                         <Turn turn={turn} />
                     </div>
                 {/key}
                 {#key river}
-                    <div in:fade={{delay: 200, duration: 1000}} id="river" style="">
+                    <div in:fade={{delay: 200, duration: 200}} id="river" style="">
                         <River river={river} />
                     </div>
                 {/key}
             </div>
         </div>
 
-        <div class="deal">
+        <div class="deal justify-center flex flex-row">
             {#if currentPhase === -1}
                 <button on:click={dealCards} type="button" class="btn my-5 variant-filled">Deal</button>
             {/if}
             {#if currentPhase >= 0}
-                <button on:click={nextPhase} type="button" class="btn my-5 variant-filled">Check</button>
-                <button on:click={reset} type="button" class="btn my-5 variant-filled">Fold</button>
+                <div class="flex flex-col items-center m-auto justify-center">
+                    <form class="flex flex-col justify-center m-auto">
+                        <input type="range" bind:value={bet} max={you.chips} />
+                        <button type="button" on:click={betfunc} class="btn m-auto my-5 variant-filled">Bet</button>
+                    </form>
+                </div>
+                <button on:click={nextPhase} type="button" class="btn mx-2 my-5 variant-filled">Check</button>
+                <button on:click={reset} type="button" class="btn mx-2 my-5 variant-filled">Fold</button>
             {/if}
         </div>
     </div>
+    <div class="cardset_ flex flex-col justify-start">
+        <div class="cardset w-1/4 items-center justify-start flex flex-row">
+            {#each drawn as card, index}
+                <div in:fade={{delay: index*1000, duration: 200}}>
+                    {#if index === 0}
+                        <Card drawn={card} --rot="-10deg"/>
+                    {:else} 
+                        <Card drawn={card} --rot="10deg"/>
+                    {/if}
+                </div>
+            {/each}
 
-    <div class="cardset w-1/4 items-center justify-start flex flex-row">
-        {#each drawn as card, index}
-            <div transition:fade={{delay: index*1000, duration: 400}}>
-                {#if index === 0}
-                    <Card drawn={card} --rot="-10deg"/>
-                {:else} 
-                    <Card drawn={card} --rot="10deg"/>
-                {/if}
-            </div>
-        {/each}
-
+        </div>
+        <YourChips you={you} />
     </div>
-    <YourChips you={you} />
 </div>
 <style>
+.cardset_{
+    position: absolute;
+    bottom: 0;
+    left: 10px;
+    padding: 10px;
+}
 
 .cardset{
     position: absolute;
     bottom: 0;
     left: 10px;
-    filter: brightness(0.8);
+    filter: brightness(0.7);
     padding: 10px;
 }
 
