@@ -13,3 +13,5 @@ Now featuring WebAssembly! Ever wondered how to Shoehorn more Rust into a simple
 5. Run `npx prisma generate`
 6. Run `npm run dev`
 7. Play poker!
+
+The WebAssembly is already compiled, but if you make changes to lib.rs, simple run `make` to recompile it.
