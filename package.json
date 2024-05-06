@@ -27,7 +27,9 @@
 		"ts-node": "^10.9.2",
 		"tslib": "^2.4.1",
 		"typescript": "^5.4.5",
-		"vite": "^5.0.3"
+		"vite": "^5.2.11",
+		"vite-plugin-top-level-await": "^1.4.1",
+		"vite-plugin-wasm": "^3.3.0"
 	},
 	"type": "module",
 	"dependencies": {
@@ -37,5 +39,13 @@
 		"lucia": "^3.2.0",
 		"surrealdb.js": "^0.11.1",
 		"uuid": "^9.0.1"
+	},
+	"optionalDependencies": {
+		"@rollup/rollup-linux-x64-gnu": "^4.17.2"
+	},
+	"overrides": {
+		"vite": {
+			"rollup": "npm:@rollup/wasm-node"
+		}
 	}
 }
