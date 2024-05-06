@@ -6,8 +6,10 @@ import { flop_ } from "$lib/store";
 import { river_ } from "$lib/store";
 import { drawn_ } from "$lib/store";
 import { currentPhase_ } from "$lib/store";
+import { is_pair } from "$lib/pkg/pokerutil";
 
 let cards = [...Cardset];
+let drawnSoFar = [];
 function dealCards() {
     drawn_.update(() => []);
     currentPhase_.update(() => 0);
@@ -15,7 +17,6 @@ function dealCards() {
         let card = draw(cards);
         drawn_.update((drawn_) => [...drawn_, card]);
         cards.splice(cards.indexOf(card), 1);
-        console.log(drawn_);
     }
 }
 function setFlop(){
@@ -41,9 +42,13 @@ function setRiver(){
         river_.update((river_) => [...river_, card]);
         cards.splice(cards.indexOf(card), 1);
     }
+    console.log(drawnSoFar);
+    console.log(is_pair(drawnSoFar));
 }
 function draw(cards: string[]) {
-    return cards[Math.floor(Math.random() * cards.length)];
+    let selected = cards[Math.floor(Math.random() * cards.length)];
+    drawnSoFar.push(selected);
+    return selected;
 }
 function nextPhase() {
     let phase = 0; 
@@ -69,6 +74,7 @@ players.push(playerone);
 
 function reset() {
     drawn_.update(() => []);
+    drawnSoFar = [];
     flop_.update(() => []);
     turn_.update(() => []);
     river_.update(() => []);

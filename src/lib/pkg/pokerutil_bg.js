@@ -146,14 +146,14 @@ function passArrayJsValueToWasm0(array, malloc) {
 * @param {(string)[]} card_labels
 * @returns {string}
 */
-export function highest_card(card_labels) {
+export function is_pair(card_labels) {
     let deferred2_0;
     let deferred2_1;
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passArrayJsValueToWasm0(card_labels, wasm.__wbindgen_export_0);
         const len0 = WASM_VECTOR_LEN;
-        wasm.highest_card(retptr, ptr0, len0);
+        wasm.is_pair(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         deferred2_0 = r0;

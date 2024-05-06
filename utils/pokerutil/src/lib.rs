@@ -3,8 +3,9 @@
 use std::convert::TryFrom;
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
+use std::collections::HashMap;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[derive(Debug, Hash, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub enum Rank {
     Two = 2,
     Three,
@@ -21,7 +22,7 @@ pub enum Rank {
     Ace
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[derive(Hash, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub enum Suit {
     Hearts,
     Diamonds,
@@ -29,17 +30,78 @@ pub enum Suit {
     Spades
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[derive(Debug, Hash, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub struct Card {
     rank: Rank,
     suit: Suit
 }
 
+#[derive(Debug, Hash, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+pub enum Hand {
+    HighCard,
+    Pair,
+    TwoPair,
+    ThreeOfAKind,
+    Straight,
+    Flush,
+    FullHouse,
+    FourOfAKind,
+    StraightFlush,
+    RoyalFlush
+}
+
+#[derive(Debug, Hash, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+pub struct BestHand {
+    ranks: Vec<Rank>,
+    hand: Hand,
+}
+
+pub fn highest_card(card_labels: &mut Vec<String>) -> Vec<Card>{
+    // Sort highest
+    let mut cards = card_labels.iter().filter_map(|label| hand(&label)).collect::<Vec<Card>>();
+    cards.sort_by_key(|label| {
+        label.rank
+    });
+    return cards;
+}
 #[wasm_bindgen]
-pub fn highest_card(card_labels: Vec<String>) -> String{
-    let highest = card_labels.iter().filter_map(|label| hand(&label)).max();
-    println!("{:?}", serde_json::to_string(&highest).unwrap());
-    return serde_json::to_string(&highest).unwrap();
+pub fn is_pair(mut card_labels: Vec<String>) -> String {
+    
+
+    let mut best_hand = BestHand {ranks: Vec::new(), hand: Hand::HighCard};
+
+    let mut cards = card_labels.iter().filter_map(|label| hand(&label)).collect::<Vec<Card>>();
+    let mut rank_count = HashMap::new(); 
+    
+    for card in cards.iter() {
+        let count = rank_count.entry(card.rank).or_insert(0);
+        *count += 1;
+    }
+    let pairs = rank_count.iter().filter(|(_, &count)| count == 2).count();
+    for (rank, count) in rank_count.iter() {
+        match pairs{
+            1 => { best_hand.hand = Hand::Pair;
+                    let paired_ranks = rank_count.iter().filter(|(_, &label)| label == 2).map(|(key, _)| *key).collect::<Vec<Rank>>();
+                    for rank in paired_ranks.iter() {
+                        if (!best_hand.ranks.contains(rank)) {
+                            best_hand.ranks.push(*rank);
+                        }
+                    } 
+            }
+            2 => { best_hand.hand = Hand::TwoPair;
+                    let paired_ranks = rank_count.iter().filter(|(_, &label)| label == 2).map(|(key, _)| *key).collect::<Vec<Rank>>();
+                    for rank in paired_ranks.iter() {
+                        if (!best_hand.ranks.contains(rank)) {
+                            best_hand.ranks.push(*rank);
+                        }
+                    } 
+            }
+            _ => { best_hand.hand = Hand::HighCard; best_hand.ranks.push(*rank); }
+        }
+    }
+    best_hand.ranks.sort_by(|a, b| b.cmp(a));
+    println!("Best Hand {:?}", best_hand);
+    return serde_json::to_string(&best_hand).unwrap();
 }
 
 pub fn hand(card_label: &str) -> Option<Card> {
@@ -86,6 +148,6 @@ mod tests {
 
     #[test]
     fn t1() {
-        highest_card(vec!["2H".to_string(), "3C".to_string(), "KD".to_string(), "KH".to_string()]);
+        is_pair(vec!["QD".to_string(), "2C".to_string(), "2H".to_string(), "AH".to_string(), "9C".to_string(), "5D".to_string(), "AC".to_string()]);
     }
 }

@@ -4,4 +4,4 @@
 * @param {(string)[]} card_labels
 * @returns {string}
 */
-export function highest_card(card_labels: (string)[]): string;
+export function is_pair(card_labels: (string)[]): string;
