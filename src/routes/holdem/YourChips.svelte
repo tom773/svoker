@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { PlayerType } from './players'; 
+    import { PlayerType } from '$lib/utils/players'; 
     export let you: PlayerType;
 
 </script>

@@ -1,89 +1,15 @@
 <script lang="ts">
     import Card from './Card.svelte';
     import { fade } from 'svelte/transition';
-    import { cardset } from '$lib/cardset';
     import Stack from './Stack.svelte';
     import Flop from './Flop.svelte';
     import Turn from './Turn.svelte';
     import River from './River.svelte';
-    import { PlayerType } from './players';
     import Player from './Player.svelte';
     import YourChips from './YourChips.svelte';
-
-    let drawn: string[] = [];
-    let flop: string[] = [];
-    let turn: string[] = [];
-    let river: string[] = [];
-    let bet: number = 0;
-
-    let cards = [...cardset];
-    function dealCards() {
-        drawn = [];
-        currentPhase = 0;
-        for (let i = 0; i < 2; i++) {
-            let card = draw(cards);
-            drawn.push(card);
-            cards.splice(cards.indexOf(card), 1);
-        }
-    }
-    function setFlop(){
-        flop = [];
-        for (let i = 0; i < 3; i++) {
-            let card = draw(cards);
-            flop.push(card);
-            cards.splice(cards.indexOf(card), 1);
-        }
-    }
-    function setTurn(){
-        turn = [];
-        for (let i = 0; i < 1; i++) {
-            let card = draw(cards);
-            turn.push(card);
-            cards.splice(cards.indexOf(card), 1);
-        }
-    }
-    function setRiver(){
-        river = [];
-        for (let i = 0; i < 1; i++) {
-            let card = draw(cards);
-            river.push(card);
-            cards.splice(cards.indexOf(card), 1);
-        }
-    }
-    function draw(cards: string[]) {
-        return cards[Math.floor(Math.random() * cards.length)];
-    }
-    let currentPhase = -1;
-    function nextPhase() {
-            
-        currentPhase++;
-        if (currentPhase === 1){
-            setFlop();
-        }
-        if (currentPhase === 2){
-            setTurn();
-        }
-        if (currentPhase === 3){
-            setRiver();
-        }
-
-    }
-    let players = [];
-    let you = new PlayerType("Tommy", 12960, "avatar.webp");
-    let playerone = new PlayerType("Jack", 32645, "avatar.webp");
-    players.push(playerone);
-
-    function reset() {
-        drawn = [];
-        flop = [];
-        turn = [];
-        river = [];
-        cards = [...cardset];
-        currentPhase = -1;
-    }
-    function betfunc() {
-        console.log(bet);
-    }
+    import {dealCards, nextPhase, players, you, reset, betfunc} from '$lib/utils/game';
+    import { drawn_, currentPhase_, flop_, turn_, river_, bet_ } from '$lib/store';
+    
 
 </script>
 <div class="flex w-full h-full items-center justify-center flex-col">
@@ -97,32 +23,32 @@
             </div>
             <div class="flex flex-row">
                 <Stack />
-                {#key flop}
+                {#key $flop_}
                     <div in:fade={{delay: 200, duration: 200}} id="flop" style="">
-                        <Flop flop={flop} />
+                        <Flop flop={$flop_} />
                     </div>
                 {/key}
-                {#key turn}
+                {#key $turn_}
                     <div in:fade={{delay: 200, duration: 200}} id="turn" style="">
-                        <Turn turn={turn} />
+                        <Turn turn={$turn_} />
                     </div>
                 {/key}
-                {#key river}
+                {#key $river_}
                     <div in:fade={{delay: 200, duration: 200}} id="river" style="">
-                        <River river={river} />
+                        <River river={$river_} />
                     </div>
                 {/key}
             </div>
         </div>
 
         <div class="deal justify-center flex flex-row">
-            {#if currentPhase === -1}
+            {#if $currentPhase_ === -1}
                 <button on:click={dealCards} type="button" class="btn my-5 variant-filled">Deal</button>
             {/if}
-            {#if currentPhase >= 0}
+            {#if $currentPhase_ >= 0}
                 <div class="flex flex-col items-center m-auto justify-center">
                     <form class="flex flex-col justify-center m-auto">
-                        <input type="range" bind:value={bet} max={you.chips} />
+                        <input type="range" bind:value={$bet_} max={you.chips} />
                         <button type="button" on:click={betfunc} class="btn m-auto my-5 variant-filled">Bet</button>
                     </form>
                 </div>
@@ -133,7 +59,7 @@
     </div>
     <div class="cardset_ flex flex-col justify-start">
         <div class="cardset w-1/4 items-center justify-start flex flex-row">
-            {#each drawn as card, index}
+            {#each $drawn_ as card, index}
                 <div in:fade={{delay: index*1000, duration: 200}}>
                     {#if index === 0}
                         <Card drawn={card} --rot="-10deg"/>

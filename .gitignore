@@ -12,4 +12,8 @@ vite.config.ts.timestamp-*
 .toml
 .sql
 /target
-/pkgr
+/rpkg
+/utils/pokerutil/target/
+target
+rpkg
+utils/pokerutil/target/
