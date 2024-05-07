@@ -8,13 +8,14 @@
 }
 
 html, body{
-    height: 100vh;
+    height: 100%;
     /* background: linear-gradient(-45deg, rgba(var(--color-primary-700)/1), rgba(var(--color-secondary-700)/1), rgba(var(--color-tertiary-700)/1), rgba(var(--color-surface-700)/1)); */
     background: linear-gradient(-65deg, rgb(249, 223, 220), rgb(10, 129, 171), rgb(12, 66, 113), rgb(0, 0, 0));
     background-size: 400% 400%;
     animation: gradient 15s ease infinite;
     backdrop-filter: brightness(0.8);
     font-family: 'jbm';
+    overflow: hidden;
 }
 
 @font-face {

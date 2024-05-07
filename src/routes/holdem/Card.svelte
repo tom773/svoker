@@ -8,8 +8,11 @@
 
 <style>
     .usercard{
-       width: 100px; 
-       height: 150px;
-       rotate: var(--rot);
+        position: relative;
+        margin-bottom: 30px;
+        object-position: top center;
+        width: 100px; 
+        height: 150px;
+        rotate: var(--rot);
     }
 </style>

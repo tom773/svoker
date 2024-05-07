@@ -73,7 +73,7 @@ function nextPhase() {
 
 }
 let players = [];
-let you = new PlayerType("Tommy", 12960, "avatar.webp");
+let you = new PlayerType("tom773", 12960, "cartman.jpg");
 let playerone = new PlayerType("Jack", 32645, "avatar.webp");
 players.push(playerone);
 
