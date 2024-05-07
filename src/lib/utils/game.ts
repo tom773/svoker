@@ -7,6 +7,8 @@ import { river_ } from "$lib/store";
 import { drawn_ } from "$lib/store";
 import { currentPhase_ } from "$lib/store";
 import { is_pair } from "$lib/pkg/pokerutil";
+import { ranks_ } from "$lib/store";
+import { handtype_ } from "$lib/store";
 
 let cards = [...Cardset];
 let drawnSoFar = [];
@@ -42,8 +44,9 @@ function setRiver(){
         river_.update((river_) => [...river_, card]);
         cards.splice(cards.indexOf(card), 1);
     }
-    console.log(drawnSoFar);
-    console.log(is_pair(drawnSoFar));
+    let result = JSON.parse(is_pair(drawnSoFar));
+    ranks_.update(()=>result.ranks);
+    handtype_.update(()=>result.hand);
 }
 function draw(cards: string[]) {
     let selected = cards[Math.floor(Math.random() * cards.length)];
@@ -80,6 +83,8 @@ function reset() {
     river_.update(() => []);
     cards = [...Cardset];
     currentPhase_.update(() => -1);
+    ranks_.update(()=>[]);
+    handtype_.update(()=>"")
     
 }
 function betfunc() {

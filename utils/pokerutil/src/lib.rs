@@ -78,28 +78,58 @@ pub fn is_pair(mut card_labels: Vec<String>) -> String {
         *count += 1;
     }
     let pairs = rank_count.iter().filter(|(_, &count)| count == 2).count();
-    for (rank, count) in rank_count.iter() {
-        match pairs{
-            1 => { best_hand.hand = Hand::Pair;
+    let three_of_a_kind = rank_count.iter().filter(|(_, &count)| count == 3).count();
+
+    if (three_of_a_kind != 0) {
+        if (pairs != 0) {
+            best_hand.hand = Hand::FullHouse;
+            let three_of_a_kind_ranks = rank_count.iter().filter(|(_, &label)| label == 3).map(|(key, _)| *key).collect::<Vec<Rank>>();
+            for rank in three_of_a_kind_ranks.iter() {
+                if (!best_hand.ranks.contains(rank)) {
+                    best_hand.ranks.push(*rank);
+                }
+            }
+            let paired_ranks = rank_count.iter().filter(|(_, &label)| label == 2).map(|(key, _)| *key).collect::<Vec<Rank>>();
+            for rank in paired_ranks.iter() {
+                if (!best_hand.ranks.contains(rank)) {
+                    best_hand.ranks.push(*rank);
+                }
+            }
+        } else {
+            best_hand.hand = Hand::ThreeOfAKind;
+            let three_of_a_kind_ranks = rank_count.iter().filter(|(_, &label)| label == 3).map(|(key, _)| *key).collect::<Vec<Rank>>();
+            for rank in three_of_a_kind_ranks.iter() {
+                if (!best_hand.ranks.contains(rank)) {
+                    best_hand.ranks.push(*rank);
+                }
+            }
+        }
+    } else {
+        for (rank, count) in rank_count.iter() {
+            match pairs{
+                1 => { best_hand.hand = Hand::Pair;
                     let paired_ranks = rank_count.iter().filter(|(_, &label)| label == 2).map(|(key, _)| *key).collect::<Vec<Rank>>();
                     for rank in paired_ranks.iter() {
                         if (!best_hand.ranks.contains(rank)) {
                             best_hand.ranks.push(*rank);
                         }
                     } 
-            }
-            2 => { best_hand.hand = Hand::TwoPair;
+                }
+                2 => { best_hand.hand = Hand::TwoPair;
                     let paired_ranks = rank_count.iter().filter(|(_, &label)| label == 2).map(|(key, _)| *key).collect::<Vec<Rank>>();
                     for rank in paired_ranks.iter() {
                         if (!best_hand.ranks.contains(rank)) {
                             best_hand.ranks.push(*rank);
                         }
                     } 
+                }
+                _ => { best_hand.hand = Hand::HighCard; best_hand.ranks.push(*rank); }
             }
-            _ => { best_hand.hand = Hand::HighCard; best_hand.ranks.push(*rank); }
         }
     }
-    best_hand.ranks.sort_by(|a, b| b.cmp(a));
+    if (best_hand.hand != Hand::FullHouse){
+        best_hand.ranks.sort_by(|a, b| b.cmp(a));
+    }
     println!("Best Hand {:?}", best_hand);
     return serde_json::to_string(&best_hand).unwrap();
 }
@@ -148,6 +178,6 @@ mod tests {
 
     #[test]
     fn t1() {
-        is_pair(vec!["QD".to_string(), "2C".to_string(), "2H".to_string(), "AH".to_string(), "9C".to_string(), "5D".to_string(), "AC".to_string()]);
+        is_pair(vec!["2D".to_string(), "2C".to_string(), "2H".to_string(), "AH".to_string(), "9C".to_string(), "5D".to_string(), "AC".to_string()]);
     }
 }
