@@ -8,8 +8,8 @@
     import Player from './Player.svelte';
     import YourChips from './YourChips.svelte';
     import {dealCards, nextPhase, players, you, reset, betfunc} from '$lib/utils/game';
-    import { handtype_, ranks_, drawn_, currentPhase_, flop_, turn_, river_, bet_ } from '$lib/store';
-    
+    import { drawn_, currentPhase_, flop_, turn_, river_, bet_ } from '$lib/store';
+    import Result from './(results)/Result.svelte'; 
 
 </script>
 <div class="flex w-full h-full items-center justify-center flex-col">
@@ -57,11 +57,7 @@
             {/if}
         </div>
     </div>
-    {#if $handtype_ !== ''}
-        <h1 id="result" style="visibility: visible;">{$handtype_} of {$ranks_}'s</h1>
-    {:else}
-        <h1 id="result" style="visibility: hidden;">{$handtype_} of {$ranks_}'s</h1>
-    {/if}
+    <Result />
     <div class="cardset_ flex flex-col justify-start">
         <div class="cardset w-1/4 items-center justify-start flex flex-row">
             {#each $drawn_ as card, index}

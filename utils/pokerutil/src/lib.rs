@@ -45,7 +45,7 @@ pub enum Hand {
     Straight,
     Flush,
     FullHouse,
-    FourOfAKind,
+    Quads,
     StraightFlush,
     RoyalFlush
 }
@@ -79,7 +79,21 @@ pub fn is_pair(mut card_labels: Vec<String>) -> String {
     }
     let pairs = rank_count.iter().filter(|(_, &count)| count == 2).count();
     let three_of_a_kind = rank_count.iter().filter(|(_, &count)| count == 3).count();
+    let quads = rank_count.iter().filter(|(_, &count)| count == 4).count();
+    
+    println!("{:?}", rank_count);
 
+    if (quads != 0) {
+        best_hand.hand = Hand::Quads;
+        let quads_ranks = rank_count.iter().filter(|(_, &label)| label == 4).map(|(key, _)| *key).collect::<Vec<Rank>>();
+        for rank in quads_ranks.iter() {
+            if (!best_hand.ranks.contains(rank)) {
+                best_hand.ranks.push(*rank);
+            }
+        }
+        println!("Best Hand {:?}", best_hand);
+        return serde_json::to_string(&best_hand).unwrap();
+    }
     if (three_of_a_kind != 0) {
         if (pairs != 0) {
             best_hand.hand = Hand::FullHouse;
@@ -178,6 +192,6 @@ mod tests {
 
     #[test]
     fn t1() {
-        is_pair(vec!["2D".to_string(), "2C".to_string(), "2H".to_string(), "AH".to_string(), "9C".to_string(), "5D".to_string(), "AC".to_string()]);
+        is_pair(vec!["2D".to_string(), "2C".to_string(), "2H".to_string(), "2S".to_string(), "9C".to_string(), "5D".to_string(), "AC".to_string()]);
     }
 }
