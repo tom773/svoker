@@ -8,3 +8,4 @@ export const river_ = writable([]);
 export const currentPhase_ = writable(-1);
 export const handtype_ = writable("");
 export const ranks_ = writable([]);
+export const suits_ = writable([]);

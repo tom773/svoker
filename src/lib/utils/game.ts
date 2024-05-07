@@ -9,6 +9,7 @@ import { currentPhase_ } from "$lib/store";
 import { is_pair } from "$lib/pkg/pokerutil";
 import { ranks_ } from "$lib/store";
 import { handtype_ } from "$lib/store";
+import { suits_ } from "$lib/store";
 
 let cards = [...Cardset];
 let drawnSoFar = [];
@@ -47,6 +48,7 @@ function setRiver(){
     let result = JSON.parse(is_pair(drawnSoFar));
     ranks_.update(()=>result.ranks);
     handtype_.update(()=>result.hand);
+    suits_.update(()=>result.suits);
 }
 function draw(cards: string[]) {
     let selected = cards[Math.floor(Math.random() * cards.length)];
@@ -85,6 +87,7 @@ function reset() {
     currentPhase_.update(() => -1);
     ranks_.update(()=>[]);
     handtype_.update(()=>"")
+    suits_.update(()=>[])
     
 }
 function betfunc() {
