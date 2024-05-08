@@ -2,10 +2,17 @@
     import Welcome from './Welcome.svelte'; 
     import '../main.css';
     import { Button } from "$lib/components/ui/button/index";
+    export let data;
 </script>
 
 <div class="auth">
-    <Button href="/signin">Sign In</Button>
+    {#if !data.user}
+        <Button href="/signin">Sign In</Button>
+    {:else}
+        <form action="/signout" method="POST">
+            <Button type="submit">Sign Out</Button>
+        </form>
+    {/if}
 </div>
 <main>
     <Welcome />

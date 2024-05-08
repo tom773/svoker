@@ -7,6 +7,10 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+export const serializeNonPOJOs = (obj) => {
+	return structuredClone(obj);
+};
+
 type FlyAndScaleParams = {
 	y?: number;
 	x?: number;

@@ -10,7 +10,7 @@
 </script>
 
 <div class={cn("grid gap-6", className)} {...$$restProps}>
-	<form method="POST">
+	<form action="?/login" method="POST">
 		<div class="grid gap-2">
 			<div class="grid gap-3">
 				<Label class="text-gray-200" for="email">Email</Label>
