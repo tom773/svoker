@@ -1,39 +1,20 @@
-// routes/signup/+page.server.ts
-//import { lucia } from "../../auth";
 import { redirect } from "@sveltejs/kit";
-import { hash } from "@node-rs/argon2";
-import { prisma } from "$lib/prisma"
-//import { v4 as uuidv4 } from "uuid";
+import PocketBase from 'pocketbase';
+const pb = new PocketBase('http://127.0.0.1:8090');
+export const actions = {
+    default: async ({ request }) => {
 
-import type { Actions } from "./$types";
-
-export const actions: Actions = {
-	default: async ({request}) => {
-        
         const data = await request.formData();
 
-        let username = data.get("username") as string
         let password = data.get("password") as string
-
-		//const userId = uuidv4(); // 16 characters long
-		const passwordHash = await hash(password, {
-			// recommended minimum parameters
-			memoryCost: 19456,
-			timeCost: 2,
-			outputLen: 32,
-			parallelism: 1
-		});
-
-		// TODO: check if username is already used
-		await prisma.users.create({
-            data: {
-			    username: username,
-			    password: passwordHash,
-            }
-		});
-
-        
-
-		redirect(302, "/");
-	}
+        let email = data.get("email") as string;
+        // TODO: check if username is already used
+         
+        const authData = await pb.collection('users').authWithPassword(email, password);
+        console.log(authData);
+        console.log(pb.authStore.isValid);
+        console.log(pb.authStore.token);
+        console.log(pb.authStore.model.id);
+        redirect(302, "/");
+    }
 };

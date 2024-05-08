@@ -17,18 +17,8 @@
 				<Input
 					id="email"
                     name="email"
-					placeholder="name@example.com"
+					placeholder="bruce@fishaddictsanonymous.com"
 					type="email"
-					autocapitalize="none"
-					autocomplete="email"
-					autocorrect="off"
-				/>
-				<Label class="text-gray-200" for="email">Display Name</Label>
-				<Input
-					id="username"
-                    name="username"
-					placeholder="assman91"
-					type="username"
 					autocapitalize="none"
 					autocomplete="email"
 					autocorrect="off"

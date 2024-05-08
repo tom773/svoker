@@ -6,6 +6,7 @@
     import {dealCards, nextPhase, you, reset, betfunc} from '$lib/utils/game';
     import { drawn_, currentPhase_, bet_ } from '$lib/store';
     import YourChips from './YourChips.svelte';
+    import Result from './\(results)/Result.svelte';
 </script>
 
 <div class="bar"> 
@@ -39,6 +40,9 @@
                         {/if}
                     </div>
                 {/each}
+                <div class="mx-20">
+                    <Result />
+                </div>
             </div>
             <div class="flex items-center nexthand">
                 {#if $currentPhase_ === -1}
@@ -75,7 +79,7 @@
     position: fixed;
     bottom: 0;
     padding: 0 1rem;
-    background-color: #2D3250;
+    background-color: #0F0F0F;
 }
 .actions {
     display: flex;

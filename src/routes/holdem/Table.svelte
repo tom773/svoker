@@ -5,10 +5,8 @@
     import Turn from './Turn.svelte';
     import River from './River.svelte';
     import Player from './Player.svelte';
-    import YourChips from './YourChips.svelte';
     import { players } from '$lib/utils/game';
     import { flop_, turn_, river_ } from '$lib/store';
-    import Result from './(results)/Result.svelte'; 
     import ActionBar from './ActionBar.svelte';
 
 </script>
@@ -42,7 +40,6 @@
         </div>
 
     </div>
-    <Result />
     <ActionBar /> 
 </div>
 <style>
@@ -53,15 +50,16 @@
 }
 
 .table {
+    margin-bottom: 10%;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 60vw;
-    height: 60vh;
+    width: 70vw;
+    height: 70vh;
     background: url('./velv.jpg');
     border-radius: 500px / 400px;
-    border: 10px solid #996515;
-    box-shadow: 0 0 90px rgba(0, 0, 0, 0.8) inset, 0 0 45px rgba(0, 0, 0, 0.8); 
+    border: 10px solid #481E14;
+    box-shadow: 0 0 90px rgba(0, 0, 0, 0.9) inset, 0 0 90px rgba(0, 0, 0, 1); 
     
 }
 

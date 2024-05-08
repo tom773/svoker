@@ -12,31 +12,31 @@
 
     {#if $handtype_ !== ''}
         {#if $handtype_==='HighCard'}<!-- Implemented -->
-            <h1 id="result" style="visibility: visible;">{$ranks_[0]} High</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">{$ranks_[0]} High</p>
         {:else if $handtype_==='Pair'}<!-- Implemented -->
-            <h1 id="result" style="visibility: visible;">Pair of {$ranks_}'s</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">Pair of {$ranks_}'s</p>
         {:else if $handtype_==='TwoPair'}<!-- Implemented -->
-            <h1 id="result" style="visibility: visible;">Two Pair: {$ranks_[0]}'s & {$ranks_[1]}'s</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">Two Pair: {$ranks_[0]}'s & {$ranks_[1]}'s</p>
         {:else if $handtype_==='ThreeOfAKind'}<!-- Implemented -->
-            <h1 id="result" style="visibility: visible;">Trips: {$ranks_}'s</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">Trips: {$ranks_}'s</p>
         {:else if $handtype_==='Straight'}
-            <h1 id="result" style="visibility: visible;">Straight: {$ranks_[0]} High</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">Straight: {$ranks_[0]} High</p>
         {:else if $handtype_==='Flush'}<!-- Implemented -->
-            <h1 id="result" style="visibility: visible;">Flush: {$ranks_} High {$suits_}</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">Flush: {$suits_}</p>
         {:else if $handtype_==='FullHouse'}<!-- Implemented -->
-            <h1 id="result" style="visibility: visible;">Full House: {$ranks_[0]}'s over {$ranks_[1]}'s</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">Full House: {$ranks_[0]}'s over {$ranks_[1]}'s</p>
         {:else if $handtype_==='Quads'}<!-- Implemented -->
-            <h1 id="result" style="visibility: visible;">Quads: {$ranks_}'s</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">Quads: {$ranks_}'s</p>
         {:else if $handtype_==='StraightFlush'}
-            <h1 id="result" style="visibility: visible;">Straight Flush: {$ranks_} High</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">Straight Flush</p>
         {:else if $handtype_==='RoyalFlush'}
-            <h1 id="result" style="visibility: visible;">Royal Flush: {$ranks_} High</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: visible;">Royal Flush</p>
         {:else}
-            <h1 id="result" style="visibility: hidden;">PH</h1>
+            <p class="font-bold" id="result" style="font-size: 18px; visibility: hidden;">PH</p>
         {/if}
 
     {:else}
-        <h1 id="result" style="visibility: hidden;">PH</h1>
+        <p class="font-bold" id="result" style="font-size: 18px; visibility: hidden;">PH</p>
     {/if}
 
 </div>

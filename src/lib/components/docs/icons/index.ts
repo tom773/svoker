@@ -1,4 +1,5 @@
 import ArrowRight from "lucide-svelte/icons/arrow-right";
+import ArrowLeft from "lucide-svelte/icons/arrow-left";
 import Check from "lucide-svelte/icons/check";
 import ChevronLeft from "lucide-svelte/icons/chevron-left";
 import ChevronRight from "lucide-svelte/icons/chevron-right";
@@ -56,6 +57,7 @@ export const Icons = {
 	warning: TriangleAlert,
 	user: User,
 	arrowRight: ArrowRight,
+    arrowLeft: ArrowLeft,
 	help: CircleHelp,
 	pizza: Pizza,
 	twitter: Twitter,

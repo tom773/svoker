@@ -1,60 +1,33 @@
 <script lang="ts">
+    import ArrowLeft from "lucide-svelte/icons/arrow-left";
 	import UserAuthForm from "./(components)/user-auth-form.svelte";
 	import { Button } from "$lib/components/ui/button/index.js";
 </script>
 
-<div
-	class="container relative hidden h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
->
-	<Button
-		href="/examples/authentication"
-		variant="ghost"
-		class="absolute right-4 top-4 md:right-8 md:top-8"
-	>
-		Login
-	</Button>
-	<div class="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-		<div
-			class="absolute inset-0 bg-cover"
-			style="
-				background-image:
-					url(https://images.unsplash.com/photo-1590069261209-f8e9b8642343?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1376&q=80);"
-		/>
-		<div class="relative z-20 flex items-center text-lg font-medium">
-			<!-- <Command class="mr-2 h-6 w-6" /> -->
-			Acme Inc
-		</div>
-		<div class="relative z-20 mt-auto">
-			<blockquote class="space-y-2">
-				<p class="text-lg">
-					&ldquo;This library has saved me countless hours of work and helped me deliver
-					stunning designs to my clients faster than ever before. Highly
-					recommended!&rdquo;
-				</p>
-				<footer class="text-sm">Sofia Davis</footer>
-			</blockquote>
-		</div>
+<div class="container relative hidden h-full flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+	<Button href="/signin" variant="ghost" style="z-index: 100;" class="absolute text-white top-4 md:right-8 md:top-8"> Login </Button>
+	<Button href="/" variant="ghost" style="z-index: 100;" class="absolute text-white mx-4 left-1/2 w-20 top-4 md:right-8 md:top-8"> <ArrowLeft/> </Button>	
+    <div class="relative hidden h-full flex-col bg-muted text-white dark:border-r lg:flex">
+		<div class="absolute inset-0 bg-cover" style="background-image: url(singup.webp);"/>
+		<div class="relative justify-center h-full w-full backdrop-brightness-50 backdrop-blur z-20 flex items-center text-6xl font-bold">
+		    Svoker
+            <div class="inline-flex mb-8 mx-5">
+                <img src="AH.png" alt="svoker" class="-rotate-12 w-30 h-40" />
+		        <img src="KH.png" alt="svoker" class="rotate-12 w-30 h-40" />
+            </div>
+        </div>
+    <!--background: linear-gradient(-65deg, rgb(249, 223, 220), rgb(10, 129, 171), rgb(12, 66, 113), rgb(0, 0, 0));-->
 	</div>
-	<div class="lg:p-8">
+    
+	<div class="flex lg:p-8 items-center h-full" style="background: linear-gradient(-65deg, rgb(240, 165, 0), rgb(207, 117, 0),  rgb(1, 1, 1));">
 		<div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
 			<div class="flex flex-col space-y-2 text-center">
-				<h1 class="text-2xl font-semibold tracking-tight">Create an account</h1>
-				<p class="text-sm text-muted-foreground">
+				<h1 class="text-2xl text-gray-200 font-semibold tracking-tight">Create an account</h1>
+				<p class="text-sm text-gray-200">
 					Enter your email below to create your account
 				</p>
 			</div>
 			<UserAuthForm />
-			<p class="px-8 text-center text-sm text-muted-foreground">
-				By clicking continue, you agree to our
-				<a href="/terms" class="underline underline-offset-4 hover:text-primary">
-					Terms of Service
-				</a>
-				and
-				<a href="/privacy" class="underline underline-offset-4 hover:text-primary">
-					Privacy Policy
-				</a>
-				.
-			</p>
 		</div>
 	</div>
 </div>
