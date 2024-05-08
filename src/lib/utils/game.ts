@@ -92,7 +92,7 @@ function reset() {
 }
 function betfunc() {
     bet_.subscribe((value) => {
-        console.log(value)
+        console.log(you.name+" bets "+value); 
     });
 }
 

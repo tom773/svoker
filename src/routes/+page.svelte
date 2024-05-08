@@ -1,11 +1,11 @@
 <script lang="ts">
     import Welcome from './Welcome.svelte'; 
     import '../main.css';
-
+    import { Button } from "$lib/components/ui/button/index";
 </script>
 
 <div class="auth">
-    <a href="/signin"><button type="button" class="btn variant-filled">Sign In</button></a>
+    <Button href="/signin">Sign In</Button>
 </div>
 <main>
     <Welcome />
@@ -28,7 +28,6 @@
         align-items: center;
         text-align: left;
         font-size: min(5vw, 2rem);
-        font-family: 'jbm';
         color: #f3f3f3;
     }
 

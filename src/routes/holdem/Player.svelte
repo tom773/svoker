@@ -3,16 +3,18 @@
     export let name: string;
     export let chips: number;
     export let avatar: string;
-
+    import * as Avatar from '$lib/components/ui/avatar';
 </script>
 
 <div class="player1 flex flex-row">
-    <div class="avatar">
-        <img src={avatar} alt="avatar" />
+    <div class="flex avatar">
+        <Avatar.Root class="w-16 h-16">
+            <Avatar.Image class="bg-white border-4 rounded-full border-gray-600 cursor-pointer hover:border-gray-400" src={avatar} alt="avatar" />
+        </Avatar.Root>
     </div>
-    <div class="flex flex-col">
-        <p>{name}</p>
-        <p>{chips}</p>
+    <div class="flex text-left flex-col">
+        <p>@{name}</p>
+        <p>${chips}</p>
     </div>
 </div>
 
@@ -24,14 +26,6 @@
         margin-left: 5px;
         font-size: 15px;
         text-align: center;
-    }
-    
-    .avatar{
-        margin-top: -10px;
-        margin-bottom: 40px;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
     }
 
 </style>

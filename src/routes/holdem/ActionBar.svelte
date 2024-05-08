@@ -1,4 +1,6 @@
 <script>
+    import { Slider } from '$lib/components/ui/slider';
+    import { Button } from '$lib/components/ui/button/index';
     import Card from './Card.svelte';
     import { fade } from 'svelte/transition';
     import {dealCards, nextPhase, you, reset, betfunc} from '$lib/utils/game';
@@ -12,16 +14,19 @@
             <div class="flex items-center actionprof">
                 <YourChips player={you}/>
             </div>
-            <div class="deal m-auto justify-start items-center flex flex-row">
+            <div style="font-size: 18px;" class="deal m-auto justify-start mx-5 items-center flex flex-row">
                 {#if $currentPhase_ >= 0}
                     <div class="flex flex-col items-center m-auto justify-center">
-                        <form class="flex flex-col justify-center m-auto">
-                            <input type="range" bind:value={$bet_} max={you.chips} />
-                            <button type="button" on:click={betfunc} class="btn m-auto my-5 variant-filled">Bet</button>
+                        <form class="flex flex-col items-center justify-center mx-5 m-auto">
+                            <Slider class="w-32 my-2" bind:value={$bet_} max={you.chips} />
+                            <div class="flex flex-row items-center justify-center">
+                                <Button style="font-size: 18px;" variant="ghost" type="button" on:click={betfunc} class="btn my-2 m-auto variant-filled">Bet</Button>
+                                <p style="font-size: 18px;">${$bet_}</p>
+                            </div>
                         </form>
                     </div>
-                    <button on:click={nextPhase} type="button" class="btn mx-2 my-5 variant-filled">Check</button>
-                    <button on:click={reset} type="button" class="btn mx-2 my-5 variant-filled">Fold</button>
+                    <Button style="font-size: 18px;" variant="ghost" on:click={nextPhase} type="button" class="btn mx-2 my-5 variant-filled">Check</Button>
+                    <Button style="font-size: 18px;" variant="ghost" on:click={reset} type="button" class="btn mx-2 my-5 variant-filled">Fold</Button>
                 {/if}
             </div>
             <div class="cardset justify-center flex flex-row">
@@ -37,11 +42,11 @@
             </div>
             <div class="flex items-center nexthand">
                 {#if $currentPhase_ === -1}
-                    <button on:click={dealCards} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
-                        <img width="32" src="./next.png" alt="next"/>&nbsp;Deal</button>
+                    <Button variant="ghost" on:click={dealCards} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
+                        <img width="32" src="./next.png" alt="next"/>&nbsp;Deal</Button>
                 {:else}
-                    <button on:click={reset} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
-                        <img width="32" src="./next.png" alt="next"/>&nbsp;Skip Hand</button>
+                    <Button variant="ghost" on:click={reset} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
+                        <img width="32" src="./next.png" alt="next"/>&nbsp;Skip Hand</Button>
                 {/if}
             </div>
         </div>

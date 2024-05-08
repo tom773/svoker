@@ -29,7 +29,6 @@
         align-items: center;
         text-align: left;
         font-size: min(5vw, 2rem);
-        font-family: 'jbm';
         color: #f3f3f3;
     }
 </style>

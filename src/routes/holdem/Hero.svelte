@@ -1,5 +1,16 @@
-<div class="landing">
+<script lang="ts">
+    import ArrowLeft from "lucide-svelte/icons/arrow-left";
+    import { Button } from '$lib/components/ui/button/index';
+</script>
 
-    <p class="text-6xl">Welcome</p>
-<h1> Holdem! </h1>
+<div class="landing">
+    <Button href="/" variant="ghost" class="text-3xl"><ArrowLeft /></Button>
 </div>
+
+<style>
+    .landing{
+        z-index: 100;
+        display: flex;
+        font-size: 2rem;
+    }
+</style>
