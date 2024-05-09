@@ -1,6 +1,7 @@
 <script lang="ts">
     
     import Profile from './(profile)/Profile.svelte';
+    import Money from './(money)/Money.svelte';
     import { pagey } from '$lib/stores/user';
     
 </script>
@@ -12,7 +13,7 @@
     {:else if $pagey === "security"}
         <p>Page not found</p>
     {:else if $pagey === "payment"}
-        <p>Page not found</p>
+        <Money /> 
     {:else if $pagey === "support"}
         <p>Page not found</p>
     {:else}

@@ -21,6 +21,10 @@ type FlyAndScaleParams = {
 export const getImageURL = (recordId, fileName, size = '0x0') => {
 	return `http://localhost:8090/api/files/users/${recordId}/${fileName}?thumb=${size}`;
 };
+
+export const numberWithCommas = (x: number) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
  
 export const flyAndScale = (
 	node: Element,

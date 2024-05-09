@@ -1,7 +1,9 @@
 <script lang="ts">
-    import { getImageURL } from "$lib/utils";
+    import { getImageURL, numberWithCommas } from "$lib/utils";
     import * as Avatar from "$lib/components/ui/avatar";
-    export let data: any; 
+    export let data: any;
+    
+
 </script>
 
 
@@ -13,7 +15,7 @@
     </div>
     <div class="flex items-center p-2 flex-col">
         <p class="py-1" style="font-size: 18px;">@{data.user.username}</p>
-        <p class="py-1" style="font-size: 16px;">$50,000</p>
+        <p class="py-1" style="font-size: 16px;">${numberWithCommas(data.user.balance)}</p>
     </div>
 </div>
 
