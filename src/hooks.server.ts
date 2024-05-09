@@ -1,5 +1,6 @@
 import PocketBase from 'pocketbase';
 import { serializeNonPOJOs } from '$lib/utils';
+import { redirect } from '@sveltejs/kit';
 
 export const handle = async ({ event, resolve }) => {
 	event.locals.pb = new PocketBase('http://localhost:8090');
@@ -10,10 +11,16 @@ export const handle = async ({ event, resolve }) => {
 	} else {
 		event.locals.user = undefined;
 	}
+    
+    if (event.url.pathname === '/holdem') {
+        if (!event.locals.user) {
+            throw redirect(303, '/signin');
+        }
+    }
 
 	const response = await resolve(event);
 
 	response.headers.set('set-cookie', event.locals.pb.authStore.exportToCookie({ secure: false }));
-
+ 
 	return response;
 };

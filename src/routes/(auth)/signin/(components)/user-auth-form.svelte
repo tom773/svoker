@@ -3,32 +3,23 @@
 	import { Input } from "$lib/components/ui/input/index";
 	import { Label } from "$lib/components/ui/label/index";
 	import { cn } from "$lib/utils.js";
-    import "../../../main.css";
+    import "../../../../main.css";
+
 	let className: string | undefined | null = undefined;
 	export { className as class };
     
 </script>
 
 <div class={cn("grid gap-6", className)} {...$$restProps}>
-	<form method="POST">
+	<form action="?/login" method="POST">
 		<div class="grid gap-2">
 			<div class="grid gap-3">
 				<Label class="text-gray-200" for="email">Email</Label>
 				<Input
 					id="email"
                     name="email"
-					placeholder="name@example.com"
+					placeholder="bruce@fishaddictsanonymous.com"
 					type="email"
-					autocapitalize="none"
-					autocomplete="email"
-					autocorrect="off"
-				/>
-				<Label class="text-gray-200" for="email">Display Name</Label>
-				<Input
-					id="username"
-                    name="username"
-					placeholder="assman91"
-					type="username"
 					autocapitalize="none"
 					autocomplete="email"
 					autocorrect="off"

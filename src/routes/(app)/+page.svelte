@@ -1,26 +1,13 @@
 <script lang="ts">
+    import Welcome from './Welcome.svelte'; 
     import '../../main.css';
-    import Hero from './Hero.svelte';
-    import Table from './Table.svelte';
-    
 </script>
 
-<div class="hero">
-    <Hero />
-</div>
-
 <main>
-    <Table /> 
+    <Welcome />
 </main>
 
 <style>
-    .hero{
-        margin: auto;
-        width: 100%;
-        position: absolute;
-        padding: 1rem;
-        color: #f3f3f3;
-    }    
 
     main{
         display: flex;
@@ -31,4 +18,5 @@
         font-size: min(5vw, 2rem);
         color: #f3f3f3;
     }
+
 </style>

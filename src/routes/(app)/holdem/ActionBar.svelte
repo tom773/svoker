@@ -7,13 +7,14 @@
     import { drawn_, currentPhase_, bet_ } from '$lib/store';
     import YourChips from './YourChips.svelte';
     import Result from './\(results)/Result.svelte';
+    export let data;
 </script>
-
 <div class="bar"> 
+{#if data.user}
     <div class="actions">
         <div class="cardset_ m-auto flex flex-row justify-evenly">
             <div class="flex items-center actionprof">
-                <YourChips player={you}/>
+                <YourChips data={data}/>
             </div>
             <div style="font-size: 18px;" class="deal m-auto justify-start mx-5 items-center flex flex-row">
                 {#if $currentPhase_ >= 0}
@@ -55,6 +56,13 @@
             </div>
         </div>
     </div>
+{:else}
+    <div class="actions">
+        <div class="cardset_ m-auto flex flex-row justify-evenly">
+            <Button href="/signin">Sign In</Button>
+        </div>
+    </div>
+{/if}
 </div>
 
 <style>

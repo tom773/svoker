@@ -8,7 +8,7 @@
     import { players } from '$lib/utils/game';
     import { flop_, turn_, river_ } from '$lib/store';
     import ActionBar from './ActionBar.svelte';
-
+    export let data;
 </script>
 <div class="flex w-full h-full items-center justify-center flex-col">
     <div class="flex flex-col items-center justify-center">
@@ -40,7 +40,7 @@
         </div>
 
     </div>
-    <ActionBar /> 
+    <ActionBar data={data}/> 
 </div>
 <style>
 .tabcards{

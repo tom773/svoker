@@ -18,6 +18,10 @@ type FlyAndScaleParams = {
 	duration?: number;
 };
 
+export const getImageURL = (recordId, fileName, size = '0x0') => {
+	return `http://localhost:8090/api/files/users/${recordId}/${fileName}?thumb=${size}`;
+};
+ 
 export const flyAndScale = (
 	node: Element,
 	params: FlyAndScaleParams = { y: -8, x: 0, start: 0.95, duration: 150 }
