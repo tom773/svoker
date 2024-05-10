@@ -48,10 +48,10 @@
             <div class="flex items-center nexthand">
                 {#if $currentPhase_ === -1}
                     <Button variant="ghost" on:click={dealCards} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
-                        <img width="32" src="./next.png" alt="next"/>&nbsp;Deal</Button>
+                        <img width="32" src="../next.png" alt="next"/>&nbsp;Deal</Button>
                 {:else}
                     <Button variant="ghost" on:click={reset} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
-                        <img width="32" src="./next.png" alt="next"/>&nbsp;Skip Hand</Button>
+                        <img width="32" src="../next.png" alt="next"/>&nbsp;Skip Hand</Button>
                 {/if}
             </div>
         </div>

@@ -6,7 +6,6 @@
     function forgot() {
         alert("Sucked in Dory! We haven't set up SMTP yet, so make a new account!");
     }
-
 </script>
 
 <div class="container relative hidden h-full flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">

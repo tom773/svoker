@@ -5,7 +5,7 @@
 </script>
 
 <div class="flex flex-row">
-    <img src="{turn[0]}.png" alt="River Card" class="card" />
+    <img src="../{turn[0]}.png" alt="River Card" class="card" />
 </div>
 
 <style>

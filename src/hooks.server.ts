@@ -17,7 +17,9 @@ export const handle = async ({ event, resolve }) => {
             throw redirect(303, '/signin');
         }
     }
-
+    event.locals.tables = await event.locals.pb.collection('tables').getFullList({
+        sort: 'tnum',
+    });
 	const response = await resolve(event);
 
 	response.headers.set('set-cookie', event.locals.pb.authStore.exportToCookie({ secure: false }));
