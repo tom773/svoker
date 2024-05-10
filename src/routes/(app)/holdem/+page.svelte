@@ -2,9 +2,13 @@
     import * as Table from '$lib/components/ui/table';
     import { Button } from '$lib/components/ui/button';
     import { serializeNonPOJOs } from '$lib/utils';
+    import {ArrowLeft} from "lucide-svelte";
     export let data;    
 </script>
 
+<div class="back m-4">
+    <Button href="/" variant="ghost" class="text-3xl"><ArrowLeft /></Button>
+</div>
 <main>
     <div class="games w-1/2 mt-10 rounded-lg bg-black text-white">
         <Table.Root>
@@ -18,13 +22,13 @@
                     </Table.Row>
                 </Table.Header>
             <Table.Body>
-                    {#each serializeNonPOJOs(data?.tables) as table}
+                {#each serializeNonPOJOs(data?.tables) as table}
                     <Table.Row>
                         <Table.Cell class="font-medium">{table.tnum}</Table.Cell>
                         <Table.Cell>{table.blinds}</Table.Cell>
                         <Table.Cell>{table.currentplayers}/{table.maxplayers}</Table.Cell>
                         <Table.Cell class="text-right">
-                            <Button href="./game" class="bg-green-500 hover:bg-green-700 active:bg-green-800">Join</Button>
+                            <Button href="./holdem/{table.tnum}" class="bg-green-500 hover:bg-green-700 active:bg-green-800">Join</Button>
                         </Table.Cell>
                     </Table.Row>
                 {/each}
@@ -35,7 +39,14 @@
 </main>
 
 <style>
-    
+
+    .back{
+        position: absolute;
+        z-index: 100;
+        display: flex;
+        font-size: 2rem;
+    }
+     
     main {
         display: flex;
         justify-content: center;

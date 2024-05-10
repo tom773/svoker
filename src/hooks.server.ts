@@ -4,6 +4,9 @@ import { redirect } from '@sveltejs/kit';
 
 export const handle = async ({ event, resolve }) => {
 	event.locals.pb = new PocketBase('http://localhost:8090');
+        event.locals.tables = await event.locals.pb.collection('tables').getFullList({
+        sort: 'tnum',
+    });
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
 	if (event.locals.pb.authStore.isValid) {
@@ -17,9 +20,6 @@ export const handle = async ({ event, resolve }) => {
             throw redirect(303, '/signin');
         }
     }
-    event.locals.tables = await event.locals.pb.collection('tables').getFullList({
-        sort: 'tnum',
-    });
 	const response = await resolve(event);
 
 	response.headers.set('set-cookie', event.locals.pb.authStore.exportToCookie({ secure: false }));

@@ -2,11 +2,13 @@
     import '../../../../main.css';
     import Hero from './Hero.svelte';
     import Table from './Table.svelte';
-    export let data;    
+    export let data: any;
+    import { page } from '$app/stores';
+    const tnum_ = $page.params.tableid;
 </script>
 
 <div class="hero">
-    <Hero />
+    <Hero tnum={parseInt(tnum_)}/>
 </div>
 
 <main>
