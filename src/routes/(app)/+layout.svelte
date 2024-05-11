@@ -2,10 +2,20 @@
     import { Button } from "$lib/components/ui/button/index";
     import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index";
     import * as Avatar from "$lib/components/ui/avatar/index";
+    import { onMount } from "svelte";
     export let data;
     function getAvatar(avatar: any, id: string, size='0x0') {
         return `http://localhost:8090/api/files/users/${id}/${avatar}?thumb=${size}`;
     }
+    let active = false;
+    onMount(() => {
+        document.onmousemove = () => {
+            active = true;
+            setTimeout(() => {
+                active = false;
+            }, 120000);
+        };
+    });
 </script>
 
 <svelte:head>
@@ -23,6 +33,11 @@
                     <Avatar.Image src={getAvatar(data.user.avatar, data.user.id)} class="border-4 rounded-full border-black cursor-pointer hover:border-gray-600" alt="lol" />
                     <Avatar.Fallback></Avatar.Fallback>
                 </Avatar.Root>
+                {#if active}
+                    <svg viewBox="0 0 20 20" style="height: 15px; z-index: 102; margin-left: 8px; margin-top: -15px;" class="border border-green rounded-full shadow" xmlns="http://www.w3.org/2000/svg">
+                        <circle fill="#2bff44" cx="10" cy="10" r="10" />
+                    </svg>
+                {/if}
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
                 <DropdownMenu.Group>

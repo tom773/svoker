@@ -4,9 +4,10 @@ import { redirect } from '@sveltejs/kit';
 
 export const handle = async ({ event, resolve }) => {
 	event.locals.pb = new PocketBase('http://localhost:8090');
-        event.locals.tables = await event.locals.pb.collection('tables').getFullList({
+    event.locals.tables = await event.locals.pb.collection('tables').getFullList({
         sort: 'tnum',
     });
+    event.locals.usertables = await event.locals.pb.collection('usertables').getFullList({});
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
 	if (event.locals.pb.authStore.isValid) {

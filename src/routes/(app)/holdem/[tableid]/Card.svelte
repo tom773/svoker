@@ -3,7 +3,7 @@
 </script>
 
 <div class="usercard">
-    <img src="./{drawn}.png" alt="card">
+    <img src="../{drawn}.png" alt="card">
 </div>
 
 <style>

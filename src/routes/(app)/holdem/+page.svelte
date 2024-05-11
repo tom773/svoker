@@ -3,7 +3,8 @@
     import { Button } from '$lib/components/ui/button';
     import { serializeNonPOJOs } from '$lib/utils';
     import {ArrowLeft} from "lucide-svelte";
-    export let data;    
+    
+    export let data;
 </script>
 
 <div class="back m-4">
@@ -12,7 +13,7 @@
 <main>
     <div class="games w-1/2 mt-10 rounded-lg bg-black text-white">
         <Table.Root>
-            <Table.Caption class="text-white">Public Tables</Table.Caption>
+            <Table.Caption class="text-white my-4">Public Tables</Table.Caption>
                 <Table.Header class="py-2">
                     <Table.Row class="py-2">
                         <Table.Head class="text-xl font-bold text-white w-[200px]">Table Number</Table.Head>
@@ -28,7 +29,10 @@
                         <Table.Cell>{table.blinds}</Table.Cell>
                         <Table.Cell>{table.currentplayers}/{table.maxplayers}</Table.Cell>
                         <Table.Cell class="text-right">
-                            <Button href="./holdem/{table.tnum}" class="bg-green-500 hover:bg-green-700 active:bg-green-800">Join</Button>
+                        <form method="POST" action="?/addToTable">
+                            <input type="hidden" name="table" value="{table.id}">
+                            <input type="hidden" name="tnum" value="{table.tnum}">
+                            <Button type="submit" class="bg-green-500 hover:bg-green-700 active:bg-green-800">Join</Button>
                         </Table.Cell>
                     </Table.Row>
                 {/each}
