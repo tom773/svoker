@@ -4,14 +4,24 @@
     import { serializeNonPOJOs } from '$lib/utils';
     import {ArrowLeft} from "lucide-svelte";
     
+    
     export let data;
+    for (let table of data.tables) {
+        if (table.currentplayers === table.maxplayers) {
+            table.full = true;
+        }
+        if (table.players.includes(data.user.id)) {
+            table.joined = true;
+        }
+    }
+    
 </script>
 
 <div class="back m-4">
     <Button href="/" variant="ghost" class="text-3xl"><ArrowLeft /></Button>
 </div>
 <main>
-    <div class="games w-1/2 mt-10 rounded-lg bg-black text-white">
+    <div class="games w-1/2 mt-10 rounded-lg bg-gray-800 text-white">
         <Table.Root>
             <Table.Caption class="text-white my-4">Public Tables</Table.Caption>
                 <Table.Header class="py-2">
@@ -29,10 +39,23 @@
                         <Table.Cell>{table.blinds}</Table.Cell>
                         <Table.Cell>{table.currentplayers}/{table.maxplayers}</Table.Cell>
                         <Table.Cell class="text-right">
-                        <form method="POST" action="?/addToTable">
-                            <input type="hidden" name="table" value="{table.id}">
-                            <input type="hidden" name="tnum" value="{table.tnum}">
-                            <Button type="submit" class="bg-green-500 hover:bg-green-700 active:bg-green-800">Join</Button>
+                            <div class="w-32 inline-flex justify-end">
+                                {#if !table.full && !table.joined}
+                                <form method="POST" action="?/addToTable">
+                                    <input type="hidden" name="table" value="{table.id}">
+                                    <input type="hidden" name="tnum" value="{table.tnum}">
+                                    <Button type="submit" class="bg-green-500 hover:bg-green-700 active:bg-green-800">Join</Button>
+                                </form>
+                                {:else if table.joined}
+                                    <Button href="/holdem/{table.tnum}" class="bg-blue-500 hover:bg-blue-700">Return</Button>
+                                    <form method="POST" action="?/removeFromTable" class="">
+                                        <input type="hidden" name="table_" value="{table.id}">
+                                        <Button type="submit" class="bg-red-500 ml-2 hover:bg-red-700">Leave</Button>
+                                    </form>
+                                {:else}
+                                    <Button class="bg-gray-500 cursor-not-allowed">Full</Button>
+                                {/if}
+                            </div>
                         </Table.Cell>
                     </Table.Row>
                 {/each}

@@ -1,15 +1,13 @@
 import { error, redirect } from '@sveltejs/kit';
-
 export const actions = {
     addToTable: async ({request, locals}) => {
         const body = await request.formData();
         try {
-            const { table } = await locals.pb.collection('tables').update(body.get('table'), {
-                players: locals.user.id,
+            const tables = await locals.pb.collection('tables').update(body.get('table'), {
+                "players+": locals.user.id,
+                "currentplayers+": 1,
             });
-            if (table){
-                locals.tables.push(table); 
-            }
+            locals.tables = tables;
         } catch (err) {
             console.log(err);
             throw error(500, 'You probably made a typo');
@@ -17,5 +15,19 @@ export const actions = {
         throw redirect(303, 'holdem/'+body.get('tnum'));
         
     },
+    removeFromTable: async ({request, locals}) => {
+        const body = await request.formData();
+        try {
+            const tabup = await locals.pb.collection('tables').update(body.get('table_'), {
+                "players-": locals.user.id,
+                "currentplayers-": 1,
+            });
+            locals.tables = tabup;
+        } catch (err) {
+            console.log(err);
+            throw error(500, 'You probably made a typo');
+        }
+        return redirect(303, 'holdem');
+    }
 
 };
