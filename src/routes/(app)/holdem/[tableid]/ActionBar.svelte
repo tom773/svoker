@@ -3,7 +3,7 @@
     import { Button } from '$lib/components/ui/button/index';
     import Card from './Card.svelte';
     import { fade } from 'svelte/transition';
-    import {dealCards, nextPhase, you, reset, betfunc} from '$lib/utils/game';
+    import {dealCards, nextPhase, reset, betfunc} from '$lib/utils/game';
     import { drawn_, currentPhase_, bet_ } from '$lib/store';
     import YourChips from './YourChips.svelte';
     import Result from './\(results)/Result.svelte';
@@ -20,7 +20,7 @@
                 {#if $currentPhase_ >= 0}
                     <div class="flex flex-col items-center m-auto justify-center">
                         <form class="flex flex-col items-center justify-center mx-5 m-auto">
-                            <Slider class="w-32 my-2" bind:value={$bet_} max={you.chips} />
+                            <Slider class="w-32 my-2" bind:value={$bet_} max={data.user.balance} />
                             <div class="flex flex-row items-center justify-center">
                                 <Button style="font-size: 18px;" variant="ghost" type="button" on:click={betfunc} class="btn my-2 m-auto variant-filled">Bet</Button>
                                 <p style="font-size: 18px;">${$bet_}</p>

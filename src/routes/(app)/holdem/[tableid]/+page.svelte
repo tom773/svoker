@@ -12,7 +12,7 @@
 </div>
 
 <main>
-    <Table data={data}/> 
+    <Table data={data} tableid={parseInt(tnum_)}/> 
 </main>
 
 <style>

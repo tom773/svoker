@@ -5,10 +5,13 @@
     import Turn from './Turn.svelte';
     import River from './River.svelte';
     import { flop_, turn_, river_ } from '$lib/store';
+    import Player from './Player.svelte';
     import ActionBar from './ActionBar.svelte';
     export let data: any;
+    export let tableid: any;
 </script>
 <div class="flex w-full h-full items-center justify-center flex-col">
+    <Player data={data} tableid={tableid}/>
     <div class="flex flex-col items-center justify-center">
 
         <div class="table flex flex-col items-center justify-center">

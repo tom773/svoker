@@ -3,7 +3,7 @@
     import { Button } from '$lib/components/ui/button';
     import { serializeNonPOJOs } from '$lib/utils';
     import {ArrowLeft} from "lucide-svelte";
-    
+    //import { tables } from '$lib/stores/table';
     
     export let data;
     for (let table of data.tables) {

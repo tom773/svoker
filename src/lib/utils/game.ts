@@ -1,4 +1,3 @@
-import { PlayerType } from "$lib/utils/players";
 import { Cardset } from "./cardset";
 import { bet_ } from "$lib/store";
 import { turn_ } from "$lib/store";
@@ -10,6 +9,7 @@ import { is_pair } from "$lib/pkg/pokerutil";
 import { ranks_ } from "$lib/store";
 import { handtype_ } from "$lib/store";
 import { suits_ } from "$lib/store";
+import { _players } from "$lib/stores/table";
 
 let cards = [...Cardset];
 let drawnSoFar = [];
@@ -72,10 +72,6 @@ function nextPhase() {
     }
 
 }
-let players = [];
-let you = new PlayerType("tom773", 12960, "cartman.jpg");
-let playerone = new PlayerType("Jack", 32645, "avatar.webp");
-players.push(playerone);
 
 function reset() {
     drawn_.update(() => []);
@@ -92,8 +88,8 @@ function reset() {
 }
 function betfunc() {
     bet_.subscribe((value) => {
-        console.log(you.name+" bets "+value); 
+        console.log(value); 
     });
 }
 
-export { dealCards, currentPhase_, nextPhase, players, you, reset, betfunc };
+export { dealCards, currentPhase_, nextPhase, _players, reset, betfunc };
