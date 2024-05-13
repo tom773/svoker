@@ -9,7 +9,7 @@ import { is_pair } from "$lib/pkg/pokerutil";
 import { ranks_ } from "$lib/store";
 import { handtype_ } from "$lib/store";
 import { suits_ } from "$lib/store";
-import { _players } from "$lib/stores/table";
+import { playerStore } from "$lib/stores/table";
 
 let cards = [...Cardset];
 let drawnSoFar = [];

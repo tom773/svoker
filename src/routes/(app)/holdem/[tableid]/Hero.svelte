@@ -1,7 +1,10 @@
 <script lang="ts">
     import ArrowLeft from "lucide-svelte/icons/arrow-left";
     import { Button } from '$lib/components/ui/button/index';
-    export let tnum: number;
+    export let tableid: string;
+    export let data: any;
+    let table = data.tables.find((table: any) => table.id === tableid);
+    let tnum = table.tnum;
 </script>
 
 <div class="landing">

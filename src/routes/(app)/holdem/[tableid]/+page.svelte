@@ -4,15 +4,15 @@
     import Table from './Table.svelte';
     export let data: any;
     import { page } from '$app/stores';
-    const tnum_ = $page.params.tableid;
+    const tableid = $page.params.tableid;
 </script>
 
 <div class="hero">
-    <Hero tnum={parseInt(tnum_)}/>
+    <Hero data={data} tableid={tableid}/>
 </div>
 
 <main>
-    <Table data={data} tableid={parseInt(tnum_)}/> 
+    <Table data={data} tableid={tableid}/> 
 </main>
 
 <style>

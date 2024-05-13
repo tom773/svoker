@@ -3,38 +3,34 @@
     export let data: any;
     export let tableid: any;
     import { onMount } from 'svelte';
-    import PocketBase from 'pocketbase';
-    const pb = new PocketBase("http://localhost:8090");
     import { numberWithCommas, getImageURL } from '$lib/utils';
-    import { _players } from '$lib/stores/table'; 
     import { LoaderCircle } from 'lucide-svelte';
     import { fade } from 'svelte/transition';
-
-    let players_: string = data.tables[tableid-1].players;
-    
-    async function getPlayers(){
-        let $_players = [];
-        for ( let i = 0; i < players_.length; i++) {
-            const record = await pb.collection("users").getOne(players_[i]);
-            _players.update(() => {
-                $_players.push(record);
-            });
-        }
-        return $_players;
-    }
-    let promise = getPlayers();
-    onMount(()=> {
-        promise = getPlayers();
+    import { playerStore } from '$lib/stores/table';
+        
+    $: players = [];
+    $: playerobj = [];
+    onMount(async () => {
+        let store = await playerStore(tableid);
+        store.subscribe(value =>  {
+            players = value;
+            test();
+        });
     });
+    async function test(){
+        const res = await fetch(`/api/utils`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({players: players})
+        });
+        playerobj = await res.json();
+    }
 </script>
-
 <div class="player1 flex flex-row">
-{#await promise}
-    <span class="loading" transition:fade={{delay: 0, duration: 300}}>
-        &nbsp;<LoaderCircle class="inline-flex w-6 left-0 h-6 absolute animate-spin" />
-    </span>
-{:then _players}
-    {#each _players as player}
+{#if playerobj.length > 0}
+    {#each playerobj as player}
         {#if player.id != data.user.id}
             <div class="flex avatar">
                 <Avatar.Root class="w-20 h-20">
@@ -47,11 +43,12 @@
             </div>
         {/if}
     {/each}
-{:catch error}
-    <p>{error.message}</p>
-{/await}
+{:else}    
+    <span class="loading" transition:fade={{delay: 0, duration: 300}}>
+        &nbsp;<LoaderCircle class="inline-flex w-6 left-0 h-6 absolute animate-spin" />
+    </span>
+{/if}
 </div>
-
 <style>
     .player1{
         align-items: center;

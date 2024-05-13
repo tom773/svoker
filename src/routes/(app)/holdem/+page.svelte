@@ -47,7 +47,7 @@
                                     <Button type="submit" class="bg-green-500 hover:bg-green-700 active:bg-green-800">Join</Button>
                                 </form>
                                 {:else if table.joined}
-                                    <Button href="/holdem/{table.tnum}" class="bg-blue-500 hover:bg-blue-700">Return</Button>
+                                    <Button href="/holdem/{table.id}" class="bg-blue-500 hover:bg-blue-700">Return</Button>
                                     <form method="POST" action="?/removeFromTable" class="">
                                         <input type="hidden" name="table_" value="{table.id}">
                                         <Button type="submit" class="bg-red-500 ml-2 hover:bg-red-700">Leave</Button>
