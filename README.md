@@ -5,12 +5,16 @@ Learning Svelte by building a poker game.
 Now featuring WebAssembly! Ever wondered how to Shoehorn more Rust into a simple frontend project? Look no further than WASM!
 
 <h3>To Do</h3>
-<ul>
-    <li>[*] Basic card dealing</li>
-    <li>[*] Basic poker hand evaluation</li>
-    <li>[*] Flop, River and Turn Simulations </li>
-    <li>[ ] Cleaner UI</li>
-    <hr>Planned
-    <li>[ ] State Management for Tables. Thinking of using hooks.server.js to load table info into locals vs doing it client side</li>
-    <li>[ ] Game loop - maybe WASM?</li>
-</ul>
+
+<hr><h4>To Do</h4>
+[ ] SSE for Game Loop. See below for Exclidraw system design. 
+[ ] Chat - WebSockets? 
+[ ] Betting 
+[ ] Advanced Hand Evaluation 
+<h4>Done</h4>
+[x] Basic card dealing
+[x] Basic poker hand evaluation
+[x] Flop, River and Turn Simulations 
+[x] Cleaner UI
+[x] SSE for seat management. Some cleanup to do but API is working. 
+
