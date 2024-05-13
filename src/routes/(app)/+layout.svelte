@@ -13,7 +13,7 @@
             active = true;
             setTimeout(() => {
                 active = false;
-            }, 120000);
+            }, 1200000);
         };
     });
 </script>

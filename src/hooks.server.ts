@@ -7,7 +7,6 @@ export const handle = async ({ event, resolve }) => {
     event.locals.tables = await event.locals.pb.collection('tables').getFullList({
         sort: 'tnum',
     });
-    event.locals.usertables = await event.locals.pb.collection('usertables').getFullList({});
 	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
 	if (event.locals.pb.authStore.isValid) {

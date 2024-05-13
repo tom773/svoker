@@ -1,13 +1,46 @@
-<script>
+<script lang="ts">
     import { Slider } from '$lib/components/ui/slider';
     import { Button } from '$lib/components/ui/button/index';
     import Card from './Card.svelte';
+    import { hand_store } from '$lib/stores/dealt';
     import { fade } from 'svelte/transition';
-    import {dealCards, nextPhase, reset, betfunc} from '$lib/utils/game';
-    import { drawn_, currentPhase_, bet_ } from '$lib/store';
+    import {dealCards, reset, betfunc} from '$lib/utils/game';
     import YourChips from './YourChips.svelte';
     import Result from './\(results)/Result.svelte';
-    export let data;
+    import { onMount } from 'svelte';
+    import { nextaction, setFlop, setTurn, setRiver } from '$lib/utils/game';
+         
+    export let currentPhase_: any;
+    export let data: any;
+    export let tableid: any;
+    let ttnh: string;
+
+    let now = new Date().getTime();
+    let countDownDate = new Date(now + 32000).getTime();
+    let x = setInterval(function() {
+        let now = new Date().getTime();
+        let distance = countDownDate - now;
+        let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        ttnh = seconds + "s";
+        if (distance < 0) {
+            clearInterval(x);
+            ttnh = "0s";
+        }
+    }, 1000);
+    $: dealt = [];
+    onMount(async () => {
+        let store = await hand_store(data.user.id, tableid);
+        store.subscribe(value =>  {
+            dealt = value;
+        });
+    });
+    $: if (currentPhase_ == 1) {
+        setFlop(tableid);
+    } else if (currentPhase_ == 2) {
+        setTurn(tableid);
+    } else if (currentPhase_ == 3) {
+        setRiver(tableid);
+    }
 </script>
 <div class="bar"> 
 {#if data.user}
@@ -17,40 +50,46 @@
                 <YourChips data={data}/>
             </div>
             <div style="font-size: 18px;" class="deal m-auto justify-start mx-5 items-center flex flex-row">
-                {#if $currentPhase_ >= 0}
+                {#if currentPhase_>= 0}
                     <div class="flex flex-col items-center m-auto justify-center">
                         <form class="flex flex-col items-center justify-center mx-5 m-auto">
-                            <Slider class="w-32 my-2" bind:value={$bet_} max={data.user.balance} />
+                            <Slider class="w-32 my-2" max={data.user.balance} />
                             <div class="flex flex-row items-center justify-center">
                                 <Button style="font-size: 18px;" variant="ghost" type="button" on:click={betfunc} class="btn my-2 m-auto variant-filled">Bet</Button>
-                                <p style="font-size: 18px;">${$bet_}</p>
+                                <p style="font-size: 18px;">$0</p>
                             </div>
                         </form>
                     </div>
-                    <Button style="font-size: 18px;" variant="ghost" on:click={nextPhase} type="button" class="btn mx-2 my-5 variant-filled">Check</Button>
-                    <Button style="font-size: 18px;" variant="ghost" on:click={reset} type="button" class="btn mx-2 my-5 variant-filled">Fold</Button>
+                    <Button style="font-size: 18px;" variant="ghost" on:click={()=>nextaction(tableid)} type="button" class="btn mx-2 my-5 variant-filled">Check</Button>
+                    <Button style="font-size: 18px;" variant="ghost" on:click={()=>reset(tableid, data.user.id)} type="button" class="btn mx-2 my-5 variant-filled">Fold</Button>
+                {:else if ttnh}
+                    <div style="width: 500px" class="countdown inline-flex flex items-center flex-row">
+                        <Button style="font-size: 18px;" variant="ghost" on:click={()=>reset(tableid, data.user.id)} type="button" class="btn mx-2 my-5 variant-filled">[Debug]</Button>
+                        <h1 class="text-white">Next Hand In: {ttnh}</h1>
+                    </div>
                 {/if}
             </div>
-            <div class="cardset justify-center flex flex-row">
-                {#each $drawn_ as card, index}
-                    <div class="cs" in:fade={{delay: index*1000, duration: 200}}>
-                        {#if index === 0}
-                            <Card drawn={card} --rot="-10deg"/>
-                        {:else} 
-                            <Card drawn={card} --rot="10deg"/>
+            <div class="cardset justify-center items-center flex flex-row">
+                <div class="cs items-center justify-center flex flex-row" in:fade={{delay: 1000, duration: 200}}>
+                        {#if dealt['c1'] != "" && ttnh}
+                            <div class="cs items-center justify-center flex flex-row" in:fade={{delay: 1000, duration: 200}}>
+                                <Card drawn={dealt['c1']} --rot="-10deg"/>
+                                <Card drawn={dealt['c2']} --rot="10deg"/> 
+                            </div>
+                        {:else}
+                            <Button class="bg-green-700 m-auto text-white">Ready Up</Button>
                         {/if}
-                    </div>
-                {/each}
+                </div>
                 <div class="mx-20">
                     <Result />
                 </div>
             </div>
             <div class="flex items-center nexthand">
-                {#if $currentPhase_ === -1}
-                    <Button variant="ghost" on:click={dealCards} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
+                {#if currentPhase_ == -1}
+                    <Button variant="ghost" on:click={async ()=> await dealCards(data.user.id, tableid)} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
                         <img width="32" src="../next.png" alt="next"/>&nbsp;Deal</Button>
                 {:else}
-                    <Button variant="ghost" on:click={reset} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
+                    <Button variant="ghost" on:click={()=>reset(tableid, data.user.id)} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
                         <img width="32" src="../next.png" alt="next"/>&nbsp;Skip Hand</Button>
                 {/if}
             </div>

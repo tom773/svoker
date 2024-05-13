@@ -1,50 +1,97 @@
 import { Cardset } from "./cardset";
 import { bet_ } from "$lib/store";
-import { turn_ } from "$lib/store";
-import { flop_ } from "$lib/store";
-import { river_ } from "$lib/store";
-import { drawn_ } from "$lib/store";
 import { currentPhase_ } from "$lib/store";
 import { is_pair } from "$lib/pkg/pokerutil";
 import { ranks_ } from "$lib/store";
 import { handtype_ } from "$lib/store";
 import { suits_ } from "$lib/store";
-import { playerStore } from "$lib/stores/table";
+import PocketBase from 'pocketbase';
+import { json } from '@sveltejs/kit';   
+
+const pb = new PocketBase('http://localhost:8090');
 
 let cards = [...Cardset];
 let drawnSoFar = [];
-function dealCards() {
-    drawn_.update(() => []);
-    currentPhase_.update(() => 0);
+
+async function updateDrawn(id: string){
+    
+    const alreadydrawn = await pb.collection('game').getList(1, 50, {
+        "filter": `table = "${id}"`
+    });
+    await pb.collection('game').update(alreadydrawn.items[0].id, {
+        "drawn": drawnSoFar,
+    });
+}
+
+async function dealCards(userid: string, tableid: string){
+    let dealt = [];
     for (let i = 0; i < 2; i++) {
         let card = draw(cards);
-        drawn_.update((drawn_) => [...drawn_, card]);
+        dealt.push(card);
         cards.splice(cards.indexOf(card), 1);
     }
+    // Fetch record that contains user & table info
+    const record = await pb.collection('gametable').getList(1, 50, {
+        "filter": `table = "${tableid}" && user = "${userid}"`
+    });
+    // Fetch table data
+    const gamedata = await pb.collection('game').getList(1, 50, {
+        "filter": `table = "${tableid}"`
+    });
+    // Draw two cards and sent to local users record in gametables
+    await pb.collection('gametable').update(record.items[0].id, {
+        "cards": {"c1": dealt[0], "c2": dealt[1]},
+    });
+    // Update game data with drawn cards
+    await updateDrawn(tableid);
+    await nextaction(tableid); 
+
 }
-function setFlop(){
-    flop_.update(()=> []);
+async function setFlop(tableid: string){
+    
+    let flop = [];
     for (let i = 0; i < 3; i++) {
         let card = draw(cards);
-        flop_.update((flop_) => [...flop_, card]);
+        flop.push(card);
         cards.splice(cards.indexOf(card), 1);
     }
+    const gamedata = await pb.collection('game').getList(1, 50, {
+        "filter": `table = "${tableid}"`
+    });
+    await pb.collection('game').update(gamedata.items[0].id, {
+        "phases": flop
+    });
+    await updateDrawn(tableid);
+
 }
-function setTurn(){
-    turn_.update(()=> []);
-    for (let i = 0; i < 1; i++) {
-        let card = draw(cards);
-        turn_.update((turn_) => [...turn_, card]);
-        cards.splice(cards.indexOf(card), 1);
-    }
+async function setTurn(tableid: string){
+    let turn = [];
+    let card = draw(cards);
+    turn.push(card);
+    cards.splice(cards.indexOf(card), 1);
+    const gamedata = await pb.collection('game').getList(1, 50, {
+        "filter": `table = "${tableid}"`
+    });
+    turn = gamedata.items[0].phases.concat(turn);
+    await pb.collection('game').update(gamedata.items[0].id, {
+        "phases": turn
+    });
+    await updateDrawn(tableid);
 }
-function setRiver(){
-    river_.update(() => []);
-    for (let i = 0; i < 1; i++) {
-        let card = draw(cards);
-        river_.update((river_) => [...river_, card]);
-        cards.splice(cards.indexOf(card), 1);
-    }
+async function setRiver(tableid: string){
+    let river = [];
+    let card = draw(cards);
+    river.push(card);
+    cards.splice(cards.indexOf(card), 1);
+    const gamedata = await pb.collection('game').getList(1, 50, {
+        "filter": `table = "${tableid}"`
+    });
+    river = gamedata.items[0].phases.concat(river);
+    await pb.collection('game').update(gamedata.items[0].id, {
+        "phases": river,
+    });
+    await updateDrawn(tableid);
+
     let result = JSON.parse(is_pair(drawnSoFar));
     ranks_.update(()=>result.ranks);
     handtype_.update(()=>result.hand);
@@ -55,41 +102,48 @@ function draw(cards: string[]) {
     drawnSoFar.push(selected);
     return selected;
 }
-function nextPhase() {
-    let phase = 0; 
-    currentPhase_.update((currentPhase_) => currentPhase_ += 1);
-    currentPhase_.subscribe((value) => {
-        phase = value;
-    });
-    if (phase === 1){
-        setFlop();
-    }
-    if (phase === 2){
-        setTurn();
-    }
-    if (phase === 3){
-        setRiver();
-    }
 
+async function resetCards(tableid: string, userid: string){
+    const record = await pb.collection('gametable').getList(1, 50, {
+        "filter": `table = "${tableid}"`
+    });
+    for (let i = 0; i < record.items.length; i++){
+        await pb.collection('gametable').update(record.items[i].id, {
+            "cards": {"c1": "", "c2": ""},
+        });
+    }
+    const gamedata = await pb.collection('game').getList(1, 50, {
+        "filter": `table = "${tableid}"`
+    });
+    await pb.collection('game').update(gamedata.items[0].id, {
+        "phases": [],
+        "action": -1,
+        "drawn": []
+    });
 }
 
-function reset() {
-    drawn_.update(() => []);
+function reset(tableid: string, userid: string) {1
     drawnSoFar = [];
-    flop_.update(() => []);
-    turn_.update(() => []);
-    river_.update(() => []);
+    resetCards(tableid, userid);
     cards = [...Cardset];
-    currentPhase_.update(() => -1);
     ranks_.update(()=>[]);
     handtype_.update(()=>"")
     suits_.update(()=>[])
     
 }
+async function nextaction(id: string){
+    const alreadydrawn = await pb.collection('game').getList(1, 50, {
+        "filter": `table = "${id}"`
+    });
+    await pb.collection('game').update(alreadydrawn.items[0].id, {
+        "action+": 1,
+    });
+}
+
 function betfunc() {
     bet_.subscribe((value) => {
         console.log(value); 
     });
 }
 
-export { dealCards, currentPhase_, nextPhase, _players, reset, betfunc };
+export {nextaction, dealCards, setFlop, setTurn, setRiver, reset, betfunc };
