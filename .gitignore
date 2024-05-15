@@ -16,4 +16,6 @@ vite.config.ts.timestamp-*
 /utils/pokerutil/target/
 target
 rpkg
+/api/tmp
+/api/pb_data
 utils/pokerutil/target/
