@@ -28,9 +28,11 @@
     });
 </script>
 <div class="player1 flex flex-row">
-    <span class="loading" transition:fade={{delay: 0, duration: 300}}>
-        &nbsp;<LoaderCircle class="inline-flex w-6 left-0 h-6 absolute animate-spin" />
-    </span>
+    {#if !players}
+        <span class="loading" transition:fade={{delay: 0, duration: 300}}>
+            &nbsp;<LoaderCircle class="inline-flex w-6 left-0 h-6 absolute animate-spin" />
+        </span>
+    {/if}
     {#each players as player}
         {#if player["user"]["id"] != data.user.id}
             <div class="flex avatar">

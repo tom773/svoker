@@ -2,19 +2,21 @@
     import { Slider } from '$lib/components/ui/slider';
     import { Button } from '$lib/components/ui/button/index';
     import Card from './Card.svelte';
-    import { hand_store } from '$lib/stores/dealt';
+    //import { hand_store } from '$lib/stores/dealt';
     import { fade } from 'svelte/transition';
     import {dealCards, reset, betfunc} from '$lib/utils/game';
     import YourChips from './YourChips.svelte';
     import Result from './\(results)/Result.svelte';
-    import { onMount } from 'svelte';
+    import { onMount, onDestroy } from 'svelte';
+    import { serializeNonPOJOs } from '$lib/utils';
     import { nextaction, setFlop, setTurn, setRiver } from '$lib/utils/game';
-         
+    import PocketBase from 'pocketbase';
+    const pb = new PocketBase("http://localhost:8090");
+
     export let currentPhase_: any;
     export let data: any;
     export let tableid: any;
     let ttnh: string;
-
     let now = new Date().getTime();
     let countDownDate = new Date(now + 32000).getTime();
     let x = setInterval(function() {
@@ -27,13 +29,36 @@
             ttnh = "0s";
         }
     }, 1000);
-    $: dealt = [];
-    onMount(async () => {
-        let store = await hand_store(data.user.id, tableid);
-        store.subscribe(value =>  {
-            dealt = value;
+    
+    $: dealt = null;
+    async function getCards(tableid: string) {
+         
+        await fetch("http://localhost:8090/api/hand",{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({"userid": data.user.id, "tableid": tableid})
+        }).then(res => res.json()).then(data => {
+            dealt = data;
+            dealt = JSON.parse(dealt["cards"])
         });
+        dealt = dealt;
+        return dealt;
+    }
+
+    pb.collection("gametable").subscribe("*", async (e) => {
+        dealt = await getCards(tableid);
     });
+
+    onMount(async () => {
+        dealt = await getCards(tableid);
+    });
+
+    onDestroy(() => {
+        pb.collection("gametable").unsubscribe('*');
+    });
+    
     $: if (currentPhase_ == 1) {
         setFlop(tableid);
     } else if (currentPhase_ == 2) {
@@ -71,7 +96,7 @@
             </div>
             <div class="cardset justify-center items-center flex flex-row">
                 <div class="cs items-center justify-center flex flex-row" in:fade={{delay: 1000, duration: 200}}>
-                        {#if dealt['c1'] != "" && ttnh}
+                        {#if dealt && ttnh}
                             <div class="cs items-center justify-center flex flex-row" in:fade={{delay: 1000, duration: 200}}>
                                 <Card drawn={dealt['c1']} --rot="-10deg"/>
                                 <Card drawn={dealt['c2']} --rot="10deg"/> 

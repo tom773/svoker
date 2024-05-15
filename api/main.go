@@ -2,6 +2,7 @@ package main
 
 import (
     "os"
+    "log"
     "net/http"
     "github.com/pocketbase/pocketbase"
     "github.com/pocketbase/pocketbase/core"
@@ -45,7 +46,14 @@ func main() {
             }
             return c.JSON(http.StatusOK, response)
         })
+        e.Router.POST("/api/hand", func(c echo.Context) error { 
+            if err := c.Bind(&request); err != nil {
+                return c.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+            }
+            response := getUserHand(*app, request.ID, request.TableID)
             
+            return c.JSON(http.StatusOK, response)
+        })
         return nil
     })
     if err := app.Start(); err != nil {
@@ -60,6 +68,16 @@ type User struct {
     Avatar string `db:"avatar" json:"avatar"`
     Balance int `db:"balance" json:"balance"`
 }
+type CardInfoResponse struct{
+    Cards string `json:"cards"`
+}
+type GameInfoResponse struct {
+    GameID string `db:"id" json:"gameid"`
+    GametableID string `db:"id" json:"gametableid"`
+    TableID string `db:"id" json:"tableid"`
+    Drawn string `db:"drawn" json:"drawn"`
+}
+
 func getAvatar(app pocketbase.PocketBase, id string) User {
     user := User{}
     err := app.Dao().DB().NewQuery("SELECT id, avatar FROM users WHERE id = {:id}").Bind(dbx.Params{"id": id}).One(&user)
@@ -77,4 +95,13 @@ func getUserInfo(app pocketbase.PocketBase, id string) User {
         panic(err)
     }
     return user
+}
+
+func getUserHand(app pocketbase.PocketBase, id string, tableid string) CardInfoResponse {
+    cinfo := CardInfoResponse{}
+    err := app.Dao().DB().NewQuery(`SELECT cards FROM gametable WHERE user = {:id} AND "table" = {:tableid}`).Bind(dbx.Params{"id": id, "tableid": tableid}).One(&cinfo)    
+    if err != nil {
+        log.Fatalf("Error %v", err)
+    }
+    return cinfo 
 }
