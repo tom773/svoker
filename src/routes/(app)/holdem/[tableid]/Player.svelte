@@ -9,45 +9,41 @@
     import { playerStore } from '$lib/stores/table';
         
     $: players = [];
-    $: playerobj = [];
     onMount(async () => {
         let store = await playerStore(tableid);
-        store.subscribe(value =>  {
-            players = value;
-            test();
+        store.subscribe(async value =>  {
+            for (let player of value){
+                await fetch("http://localhost:8090/api/basicuser",{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({"userid": player})
+                }).then(response => response.json()).then(data => {
+                    players.push(data);
+                });
+            }
+            players = players;
         });
     });
-    async function test(){
-        const res = await fetch(`/api/utils`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({players: players})
-        });
-        playerobj = await res.json();
-    }
 </script>
 <div class="player1 flex flex-row">
-{#if playerobj.length > 0}
-    {#each playerobj as player}
-        {#if player.id != data.user.id}
-            <div class="flex avatar">
-                <Avatar.Root class="w-20 h-20">
-                    <Avatar.Image class="bg-white border-4 rounded-full border-gray-600 cursor-pointer hover:border-gray-400" src={getImageURL(player.id, player.avatar)} alt="avatar" />
-                </Avatar.Root>
-            </div>
-            <div class="flex text-left flex-col">
-                <p>{player.username}</p>
-                <p>${numberWithCommas(player.balance)}</p>
-            </div>
-        {/if}
-    {/each}
-{:else}    
     <span class="loading" transition:fade={{delay: 0, duration: 300}}>
         &nbsp;<LoaderCircle class="inline-flex w-6 left-0 h-6 absolute animate-spin" />
     </span>
-{/if}
+    {#each players as player}
+        {#if player["user"]["id"] != data.user.id}
+            <div class="flex avatar">
+                <Avatar.Root class="w-20 h-20">
+                    <Avatar.Image class="bg-white border-4 rounded-full border-gray-600 cursor-pointer hover:border-gray-400" src={getImageURL(player["user"]["id"], player["user"]["avatar"])} alt="avatar" />
+                </Avatar.Root>
+            </div>
+            <div class="flex text-left flex-col">
+                <p>{player["user"]["username"]}</p>
+                <p>${numberWithCommas(player["user"]["balance"])}</p>
+            </div>
+        {/if}
+    {/each}
 </div>
 <style>
     .player1{

@@ -3,7 +3,7 @@ import { serializeNonPOJOs } from '$lib/utils';
 import { redirect } from '@sveltejs/kit';
 
 export const handle = async ({ event, resolve }) => {
-	event.locals.pb = new PocketBase('http://localhost:8090');
+	event.locals.pb = new PocketBase('http://127.0.0.1:8090');
     event.locals.tables = await event.locals.pb.collection('tables').getFullList({
         sort: 'tnum',
     });

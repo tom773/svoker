@@ -5,6 +5,7 @@
     import { onMount } from "svelte";
     export let data;
     function getAvatar(avatar: any, id: string, size='0x0') {
+
         return `http://localhost:8090/api/files/users/${id}/${avatar}?thumb=${size}`;
     }
     let active = false;

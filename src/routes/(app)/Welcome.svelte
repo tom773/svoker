@@ -10,7 +10,7 @@
     <p class="font-bold text-6xl">To The Show</p>
     <div class="flex py-5 items-center flex-row">
         <Button href="/holdem" class="mx-2">Holdem'</Button>
-        <Button class="mx-2">Omaha</Button>
+        <Button href="/omaha" class="mx-2">Omaha</Button>
         <Button class="mx-2">Blackjack</Button>
         <Button class="mx-2">Roulette</Button>
     </div>
