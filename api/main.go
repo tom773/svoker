@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "os"
     "log"
     "net/http"
@@ -9,8 +10,17 @@ import (
     "github.com/pocketbase/pocketbase/apis"
     "github.com/pocketbase/dbx"
     "github.com/labstack/echo/v5"
+    "github.com/gorilla/websocket"
+    "math/rand/v2"
 )
+var cardDeck = []string{
+     "AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H",
+     "AC", "KC", "QC", "JC", "TC", "9C", "8C", "7C", "6C", "5C", "4C", "3C", "2C",
+     "AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
+     "AS", "KS", "QS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S",
+ }
 
+    
 type Request struct {
     RecordID string `json:"recordid"`
     TableID string `json:"tableid"`
@@ -19,12 +29,25 @@ type Request struct {
     GametableID string `json:"gametableid"`
 }
 
+var upgrader = websocket.Upgrader{
+    CheckOrigin: func(r *http.Request) bool {
+        return true
+    },
+}
+
+var clients = make(map[*websocket.Conn]bool)
+var broadcast = make(chan map[string]interface{})
+var gameStateTest = make(map[string]interface{})
 
 func main() {
     var app = pocketbase.New()
     var request Request
-    // Register the custom endpoint
+
     app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
+        e.Router.GET("/ws", func(c echo.Context) error{
+            handleConnection(c.Response().Writer, c.Request())
+            return nil
+        })
         e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS("./pb_public"), false))
         e.Router.POST("/api/basicuser", func(c echo.Context) error {
             
@@ -56,6 +79,7 @@ func main() {
         })
         return nil
     })
+    
     if err := app.Start(); err != nil {
         panic(err)
     }
@@ -104,4 +128,46 @@ func getUserHand(app pocketbase.PocketBase, id string, tableid string) CardInfoR
         log.Fatalf("Error %v", err)
     }
     return cinfo 
+}
+
+func handleConnection(w http.ResponseWriter, r *http.Request) {
+    conn, err := upgrader.Upgrade(w, r, nil)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer conn.Close()
+    clients[conn] = true
+    for {
+        var msg map[string]interface{}
+        err := conn.ReadJSON(&msg)
+
+        if err != nil {
+            log.Fatal(err)
+            return
+        }
+        handleMessage(conn, msg)
+    }
+}
+
+func handleMessage(ws *websocket.Conn, msg map[string]interface{}) {
+    response := make(map[string]interface{})
+    switch msg["type"] {
+        case "update":
+            name, ok := msg["data"].(string)
+            if ok {
+                response["message"] = fmt.Sprintf("Hello, %s!", name)
+            } else {
+                response["error"] = "Invalid name"
+            }
+        case "deal":
+            response["type"] = "dealResponse"
+            response["cards"] = [2]string{cardDeck[rand.IntN(len(cardDeck))], cardDeck[rand.IntN(len(cardDeck))]}
+        default:
+            response["error"] = "Invalid message type"
+    }
+    ws.WriteJSON(response)
+}
+
+func updateGameState(msg map[string]interface{}) {
+    gameStateTest = msg
 }

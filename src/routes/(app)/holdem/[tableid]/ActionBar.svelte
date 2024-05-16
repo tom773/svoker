@@ -8,7 +8,6 @@
     import YourChips from './YourChips.svelte';
     import Result from './\(results)/Result.svelte';
     import { onMount, onDestroy } from 'svelte';
-    import { serializeNonPOJOs } from '$lib/utils';
     import { nextaction, setFlop, setTurn, setRiver } from '$lib/utils/game';
     import PocketBase from 'pocketbase';
     const pb = new PocketBase("http://localhost:8090");
@@ -16,6 +15,10 @@
     export let currentPhase_: any;
     export let data: any;
     export let tableid: any;
+
+    let socket;
+    let gameState = {};
+    
     let ttnh: string;
     let now = new Date().getTime();
     let countDownDate = new Date(now + 32000).getTime();
@@ -31,6 +34,7 @@
     }, 1000);
     
     $: dealt = null;
+    $: message = "";
     async function getCards(tableid: string) {
          
         await fetch("http://localhost:8090/api/hand",{
@@ -47,11 +51,23 @@
         return dealt;
     }
 
-    pb.collection("gametable").subscribe("*", async (e) => {
+    pb.collection("gametable").subscribe("*", async () => {
         dealt = await getCards(tableid);
     });
-
+    
     onMount(async () => {
+        socket = new WebSocket("ws://localhost:8090/ws");
+        socket.onopen = () => {
+            console.log("Connected to server");
+        }
+        socket.onmessage = (e: any) => {
+            let data = JSON.parse(e.data);
+            message = data.message;
+            console.log(data);
+        }
+        socket.onerror = (e: any) => {
+            console.log("Error: ", e);
+        }
         dealt = await getCards(tableid);
     });
 
@@ -96,14 +112,14 @@
             </div>
             <div class="cardset justify-center items-center flex flex-row">
                 <div class="cs items-center justify-center flex flex-row" in:fade={{delay: 1000, duration: 200}}>
-                        {#if dealt && ttnh}
+                    {#if dealt != null}
+                        {#if dealt['c1']}
                             <div class="cs items-center justify-center flex flex-row" in:fade={{delay: 1000, duration: 200}}>
                                 <Card drawn={dealt['c1']} --rot="-10deg"/>
-                                <Card drawn={dealt['c2']} --rot="10deg"/> 
+                                <Card drawn={dealt['c2']} --rot="10deg"/>
                             </div>
-                        {:else}
-                            <Button class="bg-green-700 m-auto text-white">Ready Up</Button>
                         {/if}
+                    {/if}
                 </div>
                 <div class="mx-20">
                     <Result />
@@ -115,7 +131,7 @@
                         <img width="32" src="../next.png" alt="next"/>&nbsp;Deal</Button>
                 {:else}
                     <Button variant="ghost" on:click={()=>reset(tableid, data.user.id)} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
-                        <img width="32" src="../next.png" alt="next"/>&nbsp;Skip Hand</Button>
+                        <img width="32" src="../next.png" alt="next"/>&nbsp;Skip Hand & {message}</Button>
                 {/if}
             </div>
         </div>
