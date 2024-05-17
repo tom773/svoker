@@ -18,7 +18,13 @@ var cardDeck = []string{
      "AC", "KC", "QC", "JC", "TC", "9C", "8C", "7C", "6C", "5C", "4C", "3C", "2C",
      "AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
      "AS", "KS", "QS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S",
- }
+}
+var resetCardDeck = []string{
+     "AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H",
+     "AC", "KC", "QC", "JC", "TC", "9C", "8C", "7C", "6C", "5C", "4C", "3C", "2C",
+     "AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
+     "AS", "KS", "QS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S",
+}
 
     
 type Request struct {
@@ -160,8 +166,19 @@ func handleMessage(ws *websocket.Conn, msg map[string]interface{}) {
                 response["error"] = "Invalid name"
             }
         case "deal":
+            fmt.Println(cardDeck)
             response["type"] = "dealResponse"
-            response["cards"] = [2]string{cardDeck[rand.IntN(len(cardDeck))], cardDeck[rand.IntN(len(cardDeck))]}
+            response["cards"] = drawCard(2)
+            fmt.Println(cardDeck)
+        case "getcomcards":
+            fmt.Println(cardDeck)
+            response["type"] = "comResponse"
+            response["cards"] = drawCard(5)
+            fmt.Println(cardDeck)
+        case "reset":
+            cardDeck = resetCardDeck
+            response["type"] = "resetResponse"
+            response["msg"] = "Deck has been reset"
         default:
             response["error"] = "Invalid message type"
     }
@@ -170,4 +187,25 @@ func handleMessage(ws *websocket.Conn, msg map[string]interface{}) {
 
 func updateGameState(msg map[string]interface{}) {
     gameStateTest = msg
+}
+
+func drawCard(n int) []string {
+    cards := make([]string, n)
+    for i := 0; i < n; i++ {
+        card := cardDeck[rand.IntN(len(cardDeck))]
+        index := Index(cardDeck, card)
+        fmt.Println(cardDeck[index])
+        cards[i]= card
+    }
+    return cards
+}
+
+func Index(s []string, v string) int {
+	for i, vs := range s {
+		if vs == v {
+			return i
+		}
+	}
+
+	return -1
 }
