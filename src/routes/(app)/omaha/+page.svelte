@@ -4,6 +4,9 @@
     export let data;
     
     let socket: WebSocket;
+    let messages = [];
+    let tableID = ['71wh85i204kt8zx'];
+
     interface GameState {
         flop: [];
         turn: [];
@@ -19,13 +22,13 @@
     $: hand = []; 
 
     function deal() {
-        socket.send(JSON.stringify({ type: 'deal'}));
+        sendMessage({ type: 'deal', tableID: tableID[0] });
     }
     function comfunc() {
-        socket.send(JSON.stringify({ type: 'getcomcards'}));
+        sendMessage({ type: 'com', tableID: tableID[0] });
     }
     function handleClick() {
-        socket.send(JSON.stringify({ type: 'reset'}));
+        sendMessage({ type: 'reset', tableID: tableID[0]});
     }
     
     onMount(() => {
@@ -36,23 +39,41 @@
         };
         
         socket.onmessage = (event) => {
+
             const d = JSON.parse(event.data);
-            if (d.type === 'dealResponse') {
-                hand = d.cards;
-            }
-            if (d.type === 'comResponse') {
-                com = d.cards;
-            }
-            if (d.type === 'resetResponse') {
-                hand = [];
-                com = [];
-                console.log(d.msg);
-            }
+            handleMessage(d);
+
         };
         socket.onerror = (error) => {
             console.error('WebSocket error:', error);
         };
     });
+    function sendMessage(message: any) {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify(message));
+        } else {
+          console.error('WebSocket is not open');
+        }
+    }
+    function handleMessage(message: any) {
+        switch (message.type) {
+          case 'dealResponse':
+            messages.push(`Dealt cards: ${message.cards.join(', ')}`);
+            break;
+          case 'comResponse':
+            messages.push(`Community cards: ${message.cards.join(', ')}`);
+            break;
+          case 'resetResponse':
+            messages.push(message.msg);
+            break;
+          case 'message':
+            messages.push(message.message);
+            break;
+          default:
+            console.error('Unknown message type:', message);
+        }
+      }
+    
 
 </script>   
 <div class="text-xl text-white justify-center w-screen h-screen m-5 p-5 items-center">
