@@ -8,7 +8,9 @@ Now featuring WebAssembly! Ever wondered how to Shoehorn more Rust into a simple
 
 <hr><h4>To Do</h4>
 
-- [ ] SSE for Game Loop. See below for Exclidraw system design. 
+- [ ] Send drawn hands to DB. 
+- [ ] Implement table specific state for WebSockets
+- [ ] WebSockets for game state updates
 - [ ] Chat - WebSockets? 
 - [ ] Betting 
 - [ ] Advanced Hand Evaluation 
@@ -20,5 +22,6 @@ Now featuring WebAssembly! Ever wondered how to Shoehorn more Rust into a simple
 - [x] Flop, River and Turn Simulations 
 - [x] Cleaner UI
 - [x] SSE for seat management. Some cleanup to do but API is working. 
+- [x] WebSockets for dealing
 
 
