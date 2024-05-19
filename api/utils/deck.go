@@ -1,32 +1,33 @@
 package utils
 
 import (
-    "fmt"
+	"fmt"
+	"math/rand/v2"
 )
 
 // Deck struct to manage the card deck
 type Deck struct {
-	cards       []string
-	originalDeck []string
+	Cards        []string
+	OriginalDeck []string
 }
 
-// NewDeck creates a new Deck with a full set of cards
+// NewDeck creates a new Deck with a full set of Cards
 func NewDeck() *Deck {
-	originalDeck := []string{
+	OriginalDeck := []string{
 		"AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H",
 		"AC", "KC", "QC", "JC", "TC", "9C", "8C", "7C", "6C", "5C", "4C", "3C", "2C",
 		"AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
 		"AS", "KS", "QS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S",
 	}
 	return &Deck{
-		cards:       append([]string(nil), originalDeck...), // make a copy of the original deck
-		originalDeck: originalDeck,
+		Cards:        append([]string(nil), OriginalDeck...), // make a copy of the original deck
+		OriginalDeck: OriginalDeck,
 	}
 }
 
 // findIndex finds the index of an element in a slice
 func (d *Deck) findIndex(element string) int {
-	for i, v := range d.cards {
+	for i, v := range d.Cards {
 		if v == element {
 			return i
 		}
@@ -36,10 +37,10 @@ func (d *Deck) findIndex(element string) int {
 
 // removeElement removes an element from a slice at a given index
 func (d *Deck) removeElement(index int) {
-	if index < 0 || index >= len(d.cards) {
+	if index < 0 || index >= len(d.Cards) {
 		return // do nothing if index is out of range
 	}
-	d.cards = append(d.cards[:index], d.cards[index+1:]...)
+	d.Cards = append(d.Cards[:index], d.Cards[index+1:]...)
 }
 
 // SelectCard selects and removes a card from the deck
@@ -52,15 +53,26 @@ func (d *Deck) SelectCard(card string) bool {
 	return false // return false if the card is not found
 }
 
-// Reset resets the deck to its original state
+// Reset resets the deck to its Original state
 func (d *Deck) Reset() {
-	d.cards = append([]string(nil), d.originalDeck...) // reset to the original deck
+	d.Cards = append([]string(nil), d.OriginalDeck...) // reset to the original deck
 }
 
-func (d *Deck) GetCards() []string {
-    return d.cards
+func (d *Deck) DrawCard(n int) []string {
+	var drawnCards []string
+	for i := 0; i < n; i++ {
+		if len(d.Cards) == 0 {
+			break
+		}
+		index := rand.IntN(len(d.Cards))
+		card := d.Cards[index]
+		drawnCards = append(drawnCards, card)
+		d.removeElement(index)
+	}
+	return drawnCards
 }
 
-func (d *Deck) Test() {
-    fmt.Println("test")
+// PrintDeck prints the current deck of cards
+func (d *Deck) PrintDeck() {
+	fmt.Println(d.Cards)
 }

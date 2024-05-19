@@ -1,23 +1,12 @@
 <script lang="ts">
     import { Button } from '$lib/components/ui/button';
     import { onMount } from 'svelte';
-    export let data;
+    //export let data;
     
     let socket: WebSocket;
     let messages = [];
     let tableID = ['71wh85i204kt8zx'];
 
-    interface GameState {
-        flop: [];
-        turn: [];
-        river: [];
-    };
-    
-    let gameState: GameState = {
-        flop: [],
-        turn: [],
-        river: []
-    };
     $: com = [];
     $: hand = []; 
 
