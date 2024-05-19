@@ -141,11 +141,11 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 			return
 		}
-		handleMessage(conn, msg)
+		handleMessage(msg)
 	}
 }
 
-func handleMessage(ws *websocket.Conn, msg map[string]interface{}) {
+func handleMessage(msg map[string]interface{}) {
 	response := make(map[string]interface{})
 	
 	deck := utils.NewDeck()
@@ -159,11 +159,29 @@ func handleMessage(ws *websocket.Conn, msg map[string]interface{}) {
 			response["error"] = "Invalid name"
 		}
 	case "deal":
-		response["type"] = "dealResponse"
-		response["cards"] = deck.DrawCard(2)
+		response := make(map[string]interface{})
+		for client := range clients {
+			response["type"] = "dealResponse"
+			response["cards"] = deck.DrawCard(2)
+
+			err := client.WriteJSON(response)
+			if err != nil {
+				log.Fatal(err)
+				client.Close()
+				delete(clients, client)
+			}
+		}
 	case "com":
-		response["type"] = "comResponse"
-		response["cards"] = deck.DrawCard(5) 
+		for client := range clients {
+			response["type"] = "comResponse"
+			response["cards"] = deck.DrawCard(5) 
+			err := client.WriteJSON(response)
+			if err != nil {
+				log.Fatal(err)
+				client.Close()
+				delete(clients, client)
+			}
+		}
 	case "reset":
 		deck.Reset()
 		response["type"] = "resetResponse"
@@ -171,7 +189,14 @@ func handleMessage(ws *websocket.Conn, msg map[string]interface{}) {
 	default:
 		response["error"] = "Invalid message type"
 	}
-	ws.WriteJSON(response)
+	for client := range clients {
+		err := client.WriteJSON(response)
+		if err != nil {
+			log.Fatal(err)
+			client.Close()
+			delete(clients, client)
+		}
+	}
 }
 
 func updateGameState(msg map[string]interface{}) {
