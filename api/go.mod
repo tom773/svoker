@@ -1,4 +1,4 @@
-module api
+module github.com/tom773/svoker/api
 
 go 1.22.0
 

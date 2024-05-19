@@ -11,17 +11,10 @@ import (
     "github.com/pocketbase/dbx"
     "github.com/labstack/echo/v5"
     "github.com/gorilla/websocket"
-    "math/rand/v2"
+    //"math/rand/v2"
+    "github.com/tom773/svoker/api/utils"
 )
-var resetCardDeck = []string{
-     "AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H",
-     "AC", "KC", "QC", "JC", "TC", "9C", "8C", "7C", "6C", "5C", "4C", "3C", "2C",
-     "AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D",
-     "AS", "KS", "QS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S",
-}
 
-var tableDecks = make(map[string][]string)
-    
 type Request struct {
     RecordID string `json:"recordid"`
     TableID string `json:"tableid"`
@@ -173,7 +166,7 @@ func handleMessage(ws *websocket.Conn, msg map[string]interface{}) {
             response["type"] = "comResponse"
             response["cards"] = drawCard(tableID, 5)
         case "reset":
-            resetDeck(tableID)
+
             response["type"] = "resetResponse"
             response["msg"] = "Deck has been reset"
         default:
@@ -187,41 +180,8 @@ func updateGameState(msg map[string]interface{}) {
 }
 
 func drawCard(tableID string, n int) []string {
-    deck, exists := tableDecks[tableID]
-    if !exists {
-        deck = resetCardDeck
-        tableDecks[tableID] = deck
-    }
-    cards := make([]string, n)
-    for i := 0; i < n; i++ {
-        if len(deck) == 0 {
-            break
-        }
-        card := deck[rand.IntN(len(deck))]
-        cards[i]= card
-        deck = remove(deck, card)
-    }
-    tableDecks[tableID] = deck
-    return cards
-}
-
-func remove(s []string, v string) []string {
-    i := Index(s, v)
-    if i == -1 {
-        return s
-    }
-    return append(s[:i], s[i+1:]...)
-}
-func Index(s []string, v string) int {
-	for i, vs := range s {
-		if vs == v {
-			return i
-		}
-	}
-
-	return -1
-}
-
-func resetDeck(tableID string) {
-    tableDecks[tableID] = resetCardDeck
+    
+    deck := utils.NewDeck()
+    fmt.Println(deck.GetCards())
+    return nil
 }

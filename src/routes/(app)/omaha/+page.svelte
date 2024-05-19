@@ -28,6 +28,8 @@
         sendMessage({ type: 'com', tableID: tableID[0] });
     }
     function handleClick() {
+        hand = [];
+        com = [];
         sendMessage({ type: 'reset', tableID: tableID[0]});
     }
     
@@ -59,9 +61,11 @@
         switch (message.type) {
           case 'dealResponse':
             messages.push(`Dealt cards: ${message.cards.join(', ')}`);
+            hand = message.cards;
             break;
           case 'comResponse':
             messages.push(`Community cards: ${message.cards.join(', ')}`);
+            com = message.cards;
             break;
           case 'resetResponse':
             messages.push(message.msg);
