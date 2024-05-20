@@ -141,15 +141,14 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 			return
 		}
-		handleMessage(msg)
+		deck := utils.NewDeck()
+		handleMessage(msg, deck)
 	}
 }
 
-func handleMessage(msg map[string]interface{}) {
-	response := make(map[string]interface{})
+func handleMessage(msg map[string]interface{}, deck *utils.Deck) {
 	
-	deck := utils.NewDeck()
-
+	response := make(map[string]interface{})
 	switch msg["type"] {
 	case "update":
 		name, ok := msg["data"].(string)
@@ -172,6 +171,7 @@ func handleMessage(msg map[string]interface{}) {
 			}
 		}
 	case "com":
+		deck.PrintDeck()
 		for client := range clients {
 			response["type"] = "comResponse"
 			response["cards"] = deck.DrawCard(5) 
