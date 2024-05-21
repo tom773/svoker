@@ -35,7 +35,11 @@
         socket.onmessage = (event) => {
 
             const d = JSON.parse(event.data);
-            handleMessage(d);
+            if (d.type === "welcome") {
+                console.log(d.msg);
+            } else {
+                handleMessage(d);
+            }
 
         };
         socket.onerror = (error) => {
@@ -74,6 +78,7 @@
             break;
           case 'msg':
             messages.push(message.message);
+            console.log(message.message);
             break;
           default:
             console.error('Unknown message type:', message);

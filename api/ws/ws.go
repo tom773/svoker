@@ -29,6 +29,16 @@ func HandleConnection(w http.ResponseWriter, r *http.Request, game *game.Game) {
 	}
 	defer conn.Close()
 	clients[conn] = true
+
+	for client := range clients {
+		if err := client.WriteJSON(welcomeMessage()); err != nil {
+			log.Printf("error: %v", err)
+			client.Close()
+			delete(clients, client)
+			return
+		}
+	}
+
 	for {
 		var msg map[string]interface{}
 		err := conn.ReadJSON(&msg)
@@ -37,6 +47,7 @@ func HandleConnection(w http.ResponseWriter, r *http.Request, game *game.Game) {
 			log.Fatal(err)
 			return
 		}
+
 		handleMessage(msg, game, app)
 	}
 }
@@ -98,4 +109,11 @@ func handleMessage(msg map[string]interface{}, game *game.Game, app *pocketbase.
 	default:
 		response["error"] = "Invalid message type"
 	}
+}
+
+func welcomeMessage() map[string]interface{} {
+	message := make(map[string]interface{})
+	message["type"] = "welcome"
+	message["msg"] = "Welcome to the WebSocket server!"
+	return message
 }
