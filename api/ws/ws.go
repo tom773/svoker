@@ -52,17 +52,63 @@ func HandleConnection(w http.ResponseWriter, r *http.Request, game *game.Game) {
 	}
 }
 
+type GameStateRes struct {
+	Cards  []string `json:"cards"`
+	Action string   `json:"action"`
+	Type   string   `json:"type"`
+	Error  string   `json:"error"`
+}
+
 func handleMessage(msg map[string]interface{}, game *game.Game, app *pocketbase.PocketBase) {
 
-	response := make(map[string]interface{})
+	response := GameStateRes{}
 	switch msg["type"] {
-	case "deal":
-		game.Deck.PrintDeck()
-		response := make(map[string]interface{})
-		for client := range clients {
-			response["type"] = "dealResponse"
-			response["cards"] = game.Deck.DrawCard(2)
+	case "com":
+		var numCards int
+		switch game.Action {
+		case "preflop":
+			response.Type = "dealResponse"
+			for client := range clients {
+				response.Cards = game.Deck.DrawCard(2)
+				err := client.WriteJSON(response)
+				if err != nil {
+					log.Fatal(err)
+					client.Close()
+					delete(clients, client)
+				}
+			}
 			game.Action = "flop"
+		case "flop":
+			numCards = 3
+			game.Action = "turn"
+		case "turn":
+			numCards = 1
+			game.Action = "river"
+		case "river":
+			numCards = 1
+			game.Action = "showdown"
+		default:
+			response.Error = "Mayday, we've had an oopsy woopsy"
+			for client := range clients {
+				err := client.WriteJSON(response)
+				if err != nil {
+					log.Fatal(err)
+					client.Close()
+					delete(clients, client)
+				}
+			}
+			return
+		}
+		// End of switch statement
+
+		if numCards > 0 {
+			response.Cards = game.Deck.DrawCard(numCards)
+		}
+
+		response.Type = "comResponse"
+		response.Action = game.Action
+
+		for client := range clients {
 			err := client.WriteJSON(response)
 			if err != nil {
 				log.Fatal(err)
@@ -70,44 +116,21 @@ func handleMessage(msg map[string]interface{}, game *game.Game, app *pocketbase.
 				delete(clients, client)
 			}
 		}
-	case "com":
-		for client := range clients {
-			response["type"] = "comResponse"
-			if game.Action == "flop" {
-				response["cards"] = game.Deck.DrawCard(3)
-				response["action"] = game.Action
-				err := client.WriteJSON(response)
-				game.Action = "turn"
-				if err != nil {
-					log.Fatal(err)
-					client.Close()
-					delete(clients, client)
-				}
-			} else if game.Action == "turn" {
-				response["cards"] = game.Deck.DrawCard(1)
-				response["action"] = game.Action
-				err := client.WriteJSON(response)
-				game.Action = "river"
-				if err != nil {
-					log.Fatal(err)
-					client.Close()
-					delete(clients, client)
-				}
-			} else if game.Action == "river" {
-				response["cards"] = game.Deck.DrawCard(1)
-				response["action"] = game.Action
-				err := client.WriteJSON(response)
-				game.Action = "deal"
-				game.Deck.Reset()
-				if err != nil {
-					log.Fatal(err)
-					client.Close()
-					delete(clients, client)
-				}
-			}
+
+		if game.Action == "showdown" {
+			game.Deck.Reset()
+			game.Action = "preflop"
 		}
 	default:
-		response["error"] = "Invalid message type"
+		response.Error = "Invalid message type"
+		for client := range clients {
+			err := client.WriteJSON(response)
+			if err != nil {
+				log.Fatal(err)
+				client.Close()
+				delete(clients, client)
+			}
+		}
 	}
 }
 

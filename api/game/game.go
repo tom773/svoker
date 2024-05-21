@@ -12,7 +12,7 @@ func GameState() *Game {
 	game := &Game{
 		Deck:    utils.NewDeck(),
 		TableID: "1",
-		Action:  "deal",
+		Action:  "preflop",
 	}
 	game.Deck.Reset()
 	return game

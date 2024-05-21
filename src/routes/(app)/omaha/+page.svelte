@@ -11,12 +11,9 @@
     $: turn = [];
     $: river = [];
     $: hand = []; 
-
-    function deal() {
-        sendMessage({ type: 'deal', tableID: tableID[0], PlayerID: data.user.id});
-    }
+    
     function comfunc() {
-        sendMessage({ type: 'com', tableID: tableID[0] });
+        sendMessage({ type: 'com', tableID: tableID[0]});
     }
     function handleClick() {
         hand = [];
@@ -55,24 +52,24 @@
     }
     function handleMessage(message: any) {
         switch (message.type) {
-          case 'dealResponse':
-            hand = message.cards;
-            break;
-          case 'comResponse':
-            switch (message.action) {
-                case 'flop':
-                    flop = message.cards;
-                    break;
-                case 'turn':
-                    turn = message.cards;
-                    break;
-                case 'river':
-                    river = message.cards;
-                    break;
-                default:
-                    console.error('Unknown message type:', message);
-            }
-            break;
+            case 'dealResponse':
+                hand = message.cards;
+                break;
+            case 'comResponse':
+                switch (message.action) {
+                    case 'turn':
+                        flop = message.cards;
+                        break;
+                    case 'river':
+                        turn = message.cards;
+                        break;
+                    case 'showdown':
+                        river = message.cards;
+                        break;
+                    default:
+                        console.error('Unknown message type:', message);
+                }
+                break;
           case 'resetResponse':
             messages.push(message.msg);
             break;
@@ -94,7 +91,7 @@
         </div>
     </div>
     <div class="py-5">
-        <Button on:click={deal}>Deal myself cards</Button>
+        <Button on:click={comfunc}>Deal myself cards</Button>
         <div class="py-5 m-auto">
             <div class="inline-flex text-white">
                 {#if hand}
