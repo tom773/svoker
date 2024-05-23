@@ -16,7 +16,7 @@ var upgrader = websocket.Upgrader{
 }
 
 // Comments on this file will be overly verbose because
-// I have no idea what the fuck is going on with all these
+// I have no idea what the hell is going on with all these
 // error as value checks ruining my code flow
 
 func main() {
