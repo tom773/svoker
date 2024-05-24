@@ -1,8 +1,6 @@
 <h1>Svoker</h1>
 
-Learning Svelte by building a poker game.
-
-Now featuring WebAssembly! Ever wondered how to Shoehorn more Rust into a simple frontend project? Look no further than WASM!
+Learning Svelte, Networking, Websockets by building a poker game. Aim is to have this be a full fledged poker game with multiplayer support.
 
 <h3>To Do</h3>
 
@@ -24,4 +22,5 @@ Now featuring WebAssembly! Ever wondered how to Shoehorn more Rust into a simple
 - [x] SSE for seat management. Some cleanup to do but API is working. 
 - [x] WebSockets for dealing
 
-
+<h4><strong>Note to self:</strong> You're onto something with unmarshalling DB tables into Go structs. We could use this persist game state and still use websockets to trigger events and
+hydration of client tables.</h4>
