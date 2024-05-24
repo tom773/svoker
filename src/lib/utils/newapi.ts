@@ -1,16 +1,17 @@
 // Blueprint for the new API
 
-function deal(s: WebSocket) {
+function gameLoop(s: WebSocket) {
     let sampleData = {
         "type": "deal"
     }
     s.send(JSON.stringify(sampleData));
 }
 
-function doGame(msg: any) {
+function dealToTable(msg: any) {
     let gameCards = [];
     let parsed = JSON.parse(msg);
-    for (let i = 0; i < 7; i++) {
+
+    for (let i = 0; i < 52; i++) {
         let card: string = parsed[i].Rank + parsed[i].Suit;
         gameCards.push(card);
     }
@@ -18,4 +19,4 @@ function doGame(msg: any) {
     return gameCards;
 }
 
-export { deal, doGame };
+export { gameLoop, dealToTable };

@@ -1,5 +1,7 @@
 <h1>Casgo</h1>
 
+<h2>This is now part of the Svoker codebase</h2>
+
 <h3>Why?</h3>
 
 <p>The codebase for my Svoker game is growing, and while I'm really having a ton of fun building something I love doing in real life (playing poker), the API is a complete mess. 

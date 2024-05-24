@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
+	"github.com/tom773/casgo/client"
 	"github.com/tom773/casgo/deck"
 )
 
@@ -21,9 +22,11 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 
-	http.HandleFunc("/ws", wsEp)
-	http.HandleFunc("/health", healthCheck)
-	http.ListenAndServe(":8080", nil)
+	client.V2connect()
+
+	//http.HandleFunc("/ws", wsEp)
+	//http.HandleFunc("/health", healthCheck)
+	//http.ListenAndServe(":8080", nil)
 }
 
 func wsEp(w http.ResponseWriter, r *http.Request) {
