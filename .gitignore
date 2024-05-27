@@ -26,6 +26,7 @@ utils/pokerutil/target/
 /api/v2/tmp
 /api/v2/pb_data
 /api/v2/pb_data/*
+/api/v2/bin
 /pb
 /tmp
 /api/v2/air.sh

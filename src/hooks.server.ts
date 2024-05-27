@@ -1,14 +1,14 @@
 //import { serializeNonPOJOs } from '$lib/utils';
 //import { redirect } from '@sveltejs/kit';
 import { newInstance } from '$lib/pocketbase';
-import {ADMIN, PASSWORD} from '$env/static/private';
+import {IDENTITY, PASSWORD} from '$env/static/private';
 
 export const handle = async ({ event, resolve }) => {
     const adminPb = newInstance();
     const userPb = newInstance();
     
     //sign in
-    await adminPb.admins.authWithPassword(ADMIN, PASSWORD);
+    await adminPb.admins.authWithPassword(IDENTITY, PASSWORD);
     event.locals.adminPb = adminPb;
     event.locals.userPb = userPb;
     event.locals.tables = await adminPb.collection('v2tables').getFullList();

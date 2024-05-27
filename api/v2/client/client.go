@@ -70,7 +70,7 @@ func Get_(coll string, filter string) []map[string]interface{} {
 			log.Fatal(err)
 		}
 	} else {
-		resp, err := client.R().Get("http://localhost:8090/api/collections/" + coll + "/records?filter(" + filter + ")")
+		resp, err := client.R().Get("http://localhost:8090/api/collections/" + coll + "/records?filter=(" + filter + ")")
 		if err != nil {
 			log.Fatal(err)
 		}

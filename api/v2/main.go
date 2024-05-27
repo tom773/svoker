@@ -25,7 +25,10 @@ func main() {
 	http.HandleFunc("/ws", wsEp)
 	http.HandleFunc("/ws/user", wsuEp)
 	http.HandleFunc("/health", healthCheck)
-	http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func wsEp(w http.ResponseWriter, r *http.Request) {
