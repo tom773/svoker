@@ -13,6 +13,7 @@ import (
 // This sends the full game to the server, which I think works better than having the server handle actions
 func Deal(d deck.Deck, t string) {
 	client := initClient()
+
 	resp, err := client.R().Get("http://localhost:8090/api/collections/v2gameuser/records?filter(gameID='" + t + "'))")
 	if err != nil {
 		log.Fatal(err)
@@ -55,7 +56,7 @@ func Deal(d deck.Deck, t string) {
 	}
 }
 
-func get_(coll string, filter string) []map[string]interface{} {
+func Get_(coll string, filter string) []map[string]interface{} {
 	client := initClient()
 	var apiResponse models.ApiResponse
 
@@ -94,7 +95,7 @@ func Reset(t string) {
 	}
 
 	var users []map[string]interface{}
-	usersJSON, err := json.Marshal(get_("v2gameuser", "gameID='"+t+"'"))
+	usersJSON, err := json.Marshal(Get_("v2gameuser", "gameID='"+t+"'"))
 
 	if err != nil {
 		log.Fatal(err)
@@ -134,4 +135,10 @@ func initClient() *resty.Client {
 		SetAuthToken(key).
 		SetHeader("Content-Type", "application/json")
 	return client
+}
+
+func GetPlayers(t string) interface{} {
+	response := Get_("v2tables", "id='"+t+"'")
+	return response[0]["players"]
+
 }

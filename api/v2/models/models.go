@@ -18,6 +18,7 @@ type Game struct {
 	ID             string `json:"id"`
 	Table_Number   int    `json:"table_number"`
 	CollectionName string `json:"collection_name"`
+	Table          string `json:"table_name"`
 	CreatedAt      string `json:"created"`
 	UpdateAt       string `json:"updated"`
 }

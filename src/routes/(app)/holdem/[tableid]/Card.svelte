@@ -1,9 +1,10 @@
 <script lang="ts">
-    export let drawn: string;
+    export let drawn: any;
+    console.log(drawn)
 </script>
 
 <div class="usercard">
-    <img src="../{drawn}.png" alt="card">
+    <img src="../{drawn['Rank']+drawn['Suit']}.png" alt="card">
 </div>
 
 <style>

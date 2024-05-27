@@ -6,11 +6,13 @@ import {ADMIN, PASSWORD} from '$env/static/private';
 export const handle = async ({ event, resolve }) => {
     const adminPb = newInstance();
     const userPb = newInstance();
+    
     //sign in
     await adminPb.admins.authWithPassword(ADMIN, PASSWORD);
     event.locals.adminPb = adminPb;
     event.locals.userPb = userPb;
-
+    event.locals.tables = await adminPb.collection('v2tables').getFullList();
+    event.locals.games = await adminPb.collection('v2game').getFullList();
     // Load the authStore from the cookie
 	event.locals.userPb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
     try{

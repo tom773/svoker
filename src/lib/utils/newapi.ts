@@ -1,12 +1,12 @@
 // This will replace game.ts probably
 
-function dealToTable(s: WebSocket, user: string) {
+function dealToTable(s: WebSocket, user: string, table: string) {
     let gameCards = [];
     
     let payload = {
         "type": "deal",
         "user": user,
-        "gameID": "zfu2qstfnvqggr7",
+        "gameID": table,
     }
 
     s.send(JSON.stringify(payload));
@@ -14,17 +14,25 @@ function dealToTable(s: WebSocket, user: string) {
     return gameCards;
 }
 
-function resetTable(s: WebSocket, user: string) {
+function resetTable(s: WebSocket, user: string, table: string) {
     let payload = {
         "type": "reset",
         "user": user,
-        "gameID": "zfu2qstfnvqggr7",
+        "gameID": table,
     }
 
     s.send(JSON.stringify(payload));
 }
 
-export { dealToTable, resetTable };
+function showdown(s: WebSocket) {
+    let payload = {
+        "type": "showdown",
+    }
+
+    s.send(JSON.stringify(payload));
+}
+
+export { dealToTable, resetTable, showdown };
 
 // Poker Game:
 // 1. Deal - Implemented

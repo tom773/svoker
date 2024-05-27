@@ -4,8 +4,11 @@ declare global {
 	namespace App {
         type PocketBase = import('pocketbase').default;
         interface Locals {
-            pb?: PocketBase;
+            adminPb?: PocketBase;
+            userPb?: PocketBase;
             user?: Record<string, T>;
+            tables?: Record<string, T>;
+            games?: Record<string, T>;
 		}
 		// interface Error {}
 		// interface Locals {}

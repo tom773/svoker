@@ -1,24 +1,23 @@
 <script lang="ts">
+    // Components
     import { Slider } from '$lib/components/ui/slider';
     import { Button } from '$lib/components/ui/button/index';
     import Card from './Card.svelte';
-    //import { hand_store } from '$lib/stores/dealt';
-    import { fade } from 'svelte/transition';
-    import {dealCards, reset, betfunc} from '$lib/utils/game';
-    import YourChips from './YourChips.svelte';
     import Result from './\(results)/Result.svelte';
+    import YourChips from './YourChips.svelte';
+    // Functions
+    import { fade } from 'svelte/transition';
+    import { dealToTable, resetTable, showdown } from '$lib/utils/newapi';
     import { onMount, onDestroy } from 'svelte';
-    import { nextaction, setFlop, setTurn, setRiver } from '$lib/utils/game';
+    // DB
     import PocketBase from 'pocketbase';
     const pb = new PocketBase("http://localhost:8090");
-
+    // Exports
     export let currentPhase_: any;
     export let data: any;
     export let tableid: any;
-
-    let socket;
-    let gameState = {};
     
+    // Leave Alone for Now
     let ttnh: string;
     let now = new Date().getTime();
     let countDownDate = new Date(now + 32000).getTime();
@@ -32,55 +31,47 @@
             ttnh = "0s";
         }
     }, 1000);
-    
+    // Leave alone for now
+
+    // Websocket stuff from here
+    let socket: WebSocket;
+    let gameid: string;
     $: dealt = null;
     $: message = "";
-    async function getCards(tableid: string) {
-         
-        await fetch("http://localhost:8090/api/hand",{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({"userid": data.user.id, "tableid": tableid})
-        }).then(res => res.json()).then(data => {
-            dealt = data;
-            dealt = JSON.parse(dealt["cards"])
+    onMount(async () => {
+        socket = new WebSocket('ws://localhost:8080/ws');
+        
+        socket.onopen = () => {
+            console.log('Connected to server');
+        };
+
+        socket.onmessage = (event: any) => {
+            console.log(event.data);
+        };
+        
+        socket.onerror = (error: any) => {
+            console.error('WebSocket error:', error);
+        };
+        //Subscribing to PB
+        pb.collection('v2gameuser').subscribe('*', function (e) {
+            dealt = e.record['hand'];
         });
-        dealt = dealt;
-        return dealt;
+    });
+    for (let game of data.games){
+        if (tableid == game['table']){
+            gameid = game['id'];
+        }
+    }
+    function showDown() {
+        showdown(socket);
+    }
+    function dealDeckToTable() {
+        dealToTable(socket, data.user.id, gameid);
     }
 
-    pb.collection("gametable").subscribe("*", async () => {
-        dealt = await getCards(tableid);
-    });
-    
-    onMount(async () => {
-        socket = new WebSocket("ws://localhost:8090/ws");
-        socket.onopen = () => {
-            console.log("Connected to server");
-        }
-        socket.onmessage = (e: any) => {
-            let data = JSON.parse(e.data);
-            message = data.message;
-            console.log(data);
-        }
-        socket.onerror = (e: any) => {
-            console.log("Error: ", e);
-        }
-        dealt = await getCards(tableid);
-    });
-
-    onDestroy(() => {
-        pb.collection("gametable").unsubscribe('*');
-    });
-    
-    $: if (currentPhase_ == 1) {
-        setFlop(tableid);
-    } else if (currentPhase_ == 2) {
-        setTurn(tableid);
-    } else if (currentPhase_ == 3) {
-        setRiver(tableid);
+    function reset() {
+        resetTable(socket, data.user.id, gameid);
+        dealt = [];
     }
 </script>
 <div class="bar"> 
@@ -96,16 +87,17 @@
                         <form class="flex flex-col items-center justify-center mx-5 m-auto">
                             <Slider class="w-32 my-2" max={data.user.balance} />
                             <div class="flex flex-row items-center justify-center">
-                                <Button style="font-size: 18px;" variant="ghost" type="button" on:click={betfunc} class="btn my-2 m-auto variant-filled">Bet</Button>
+                                <Button style="font-size: 18px;" variant="ghost" type="button" on:click={()=>console.log("Bet Event")} class="btn my-2 m-auto variant-filled">Bet</Button>
                                 <p style="font-size: 18px;">$0</p>
                             </div>
                         </form>
                     </div>
-                    <Button style="font-size: 18px;" variant="ghost" on:click={()=>nextaction(tableid)} type="button" class="btn mx-2 my-5 variant-filled">Check</Button>
-                    <Button style="font-size: 18px;" variant="ghost" on:click={()=>reset(tableid, data.user.id)} type="button" class="btn mx-2 my-5 variant-filled">Fold</Button>
+                    <Button style="font-size: 18px;" variant="ghost" on:click={()=>dealDeckToTable()} type="button" class="btn mx-2 my-5 variant-filled">Check (Play Entire Game)</Button>
+                    <Button style="font-size: 18px;" variant="ghost" on:click={()=>reset()} type="button" class="btn mx-2 my-5 variant-filled">Fold</Button>
+                    <Button style="font-size: 18px;" variant="ghost" on:click={()=>showDown()} type="button" class="btn mx-2 my-5 variant-filled">Showdown</Button>
                 {:else if ttnh}
                     <div style="width: 500px" class="countdown inline-flex flex items-center flex-row">
-                        <Button style="font-size: 18px;" variant="ghost" on:click={()=>reset(tableid, data.user.id)} type="button" class="btn mx-2 my-5 variant-filled">[Debug]</Button>
+                        <Button style="font-size: 18px;" variant="ghost" on:click={()=>reset()} type="button" class="btn mx-2 my-5 variant-filled">[Debug]</Button>
                         <h1 class="text-white">Next Hand In: {ttnh}</h1>
                     </div>
                 {/if}
@@ -113,10 +105,10 @@
             <div class="cardset justify-center items-center flex flex-row">
                 <div class="cs items-center justify-center flex flex-row" in:fade={{delay: 1000, duration: 200}}>
                     {#if dealt != null}
-                        {#if dealt['c1']}
+                        {#if dealt[0]}
                             <div class="cs items-center justify-center flex flex-row" in:fade={{delay: 1000, duration: 200}}>
-                                <Card drawn={dealt['c1']} --rot="-10deg"/>
-                                <Card drawn={dealt['c2']} --rot="10deg"/>
+                                <Card drawn={dealt[0]} --rot="-10deg"/>
+                                <Card drawn={dealt[1]} --rot="10deg"/>
                             </div>
                         {/if}
                     {/if}
@@ -127,10 +119,10 @@
             </div>
             <div class="flex items-center nexthand">
                 {#if currentPhase_ == -1}
-                    <Button variant="ghost" on:click={async ()=> await dealCards(data.user.id, tableid)} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
+                    <Button variant="ghost" on:click={()=>reset()} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
                         <img width="32" src="../next.png" alt="next"/>&nbsp;Deal</Button>
                 {:else}
-                    <Button variant="ghost" on:click={()=>reset(tableid, data.user.id)} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
+                    <Button variant="ghost" on:click={()=>reset()} type="button" style="display: inline-flex; align-items: center;" class="btn my-5 w-40 variant-filled">
                         <img width="32" src="../next.png" alt="next"/>&nbsp;Skip Hand & {message}</Button>
                 {/if}
             </div>

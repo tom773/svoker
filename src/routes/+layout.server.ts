@@ -8,7 +8,9 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	if (user) {
 		return {
 			user: { user, isLoggedIn: true },
-		};
+		    tables: locals.tables,
+            games: locals.games,
+        };
 	}
 	return {
 		user: undefined,

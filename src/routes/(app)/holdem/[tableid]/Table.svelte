@@ -7,22 +7,34 @@
     import Player from './Player.svelte';
     import ActionBar from './ActionBar.svelte';
     import { onMount } from 'svelte';
-    import { gameStore } from '$lib/stores/game';
-    import { loopStore } from '$lib/stores/loop';
     export let data: any;
     export let tableid: any;
-     
+    import PocketBase from 'pocketbase';
+    const pb = new PocketBase("http://localhost:8090");
+
     $: cards = [];
     $: currentPhase_ = 0;
-    onMount(async () => {
-        let store = await gameStore(tableid);
-        store.subscribe(value =>  {
-            cards = value;
-        });
-        let loopstore = await loopStore(tableid);
-        loopstore.subscribe((value) => {
-            let currentPhase = value;
-            currentPhase_ = currentPhase as number;
+    $: key_ = 0;
+
+    let socket: WebSocket;
+    onMount(() => {
+        socket = new WebSocket('ws://localhost:8080/ws');
+        socket.onopen = () => {
+            console.log('Connected to server');
+        };
+        socket.onmessage = (event: any) => {
+            console.log(event.data);
+        };
+         
+        socket.onerror = (error: any) => {
+            console.error('WebSocket error:', error);
+        };
+        pb.collection('v2game').subscribe('*', function (e) {
+            if (e.record['table'] == tableid){
+                let cardset = e.record['deck'];
+                cards = cardset.slice(0, 5);
+                key_++;
+            }
         });
     });
 
@@ -35,33 +47,13 @@
         <div class="table flex flex-col items-center justify-center">
             <div class="flex tabcards flex-row">
                 <Stack />
-                    {#if currentPhase_ >= 1}
-                        <div in:fade={{delay: 200, duration: 200}} id="flop" style="">
-                            <Flop flop={cards} />
-                        </div>
-                    {:else}
-                        <div in:fade={{delay: 200, duration: 200}} id="flop">
-                            <Flop flop={[]} />
-                        </div>
+                {#key key_}
+                    {#if cards.length != 0}
+                        {#each cards as card}
+                            <img class="w-24 p-2 h-36" src="../{card['Rank']+card['Suit']}.png" alt="River Card" /> 
+                        {/each}
                     {/if}
-                    {#if currentPhase_ >= 2}
-                        <div in:fade={{delay: 200, duration: 200}} id="flop" style="">
-                            <Turn turn={[cards[3]]} />
-                        </div>
-                    {:else}
-                        <div in:fade={{delay: 200, duration: 200}} id="flop">
-                            <Turn turn={[]} />
-                        </div>
-                    {/if}
-                    {#if currentPhase_ >= 3}
-                        <div in:fade={{delay: 200, duration: 200}} id="river" style="">
-                            <River river={[cards[4]]}/>
-                        </div>
-                    {:else}
-                        <div in:fade={{delay: 200, duration: 200}} id="river">
-                            <River river={[]} />
-                        </div>
-                    {/if}
+                {/key}
             </div>
         </div>
 

@@ -23,6 +23,7 @@ var upgrader = websocket.Upgrader{
 func main() {
 
 	http.HandleFunc("/ws", wsEp)
+	http.HandleFunc("/ws/user", wsuEp)
 	http.HandleFunc("/health", healthCheck)
 	http.ListenAndServe(":8080", nil)
 }
@@ -82,10 +83,58 @@ func wsEp(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "could not write message", http.StatusInternalServerError)
 				break
 			}
+		case "showdown":
+			err = conn.WriteMessage(websocket.TextMessage, []byte("showdown"))
+			if err != nil {
+				http.Error(w, "could not write message", http.StatusInternalServerError)
+				break
+			}
 		// Reset The Cards
 		case "reset":
 			client.Reset(request["gameID"].(string))
 			err = conn.WriteMessage(websocket.TextMessage, []byte("Resetting"))
+			if err != nil {
+				http.Error(w, "could not write message", http.StatusInternalServerError)
+				break
+			}
+		default:
+			err = conn.WriteMessage(websocket.TextMessage, []byte("Unknown Request"))
+		}
+	}
+}
+
+func wsuEp(w http.ResponseWriter, r *http.Request) {
+	// Accept the WS connection
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		http.Error(w, "could not upgrade connection", http.StatusInternalServerError)
+	}
+	defer conn.Close()
+
+	// Response Loop Starts
+	for {
+
+		// Read an incoming message, close if not.
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			conn.WriteMessage(websocket.CloseMessage, []byte(err.Error()))
+			return
+		}
+		// Making a map for the request so I can unmarshall it
+		request := make(map[string]interface{})
+
+		// Unmarshall the request
+		err = json.Unmarshal(message, &request)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// All WS messages, in and out, go through this switch statement.
+		switch request["type"] {
+		case "getplayers":
+			resp := client.GetPlayers(request["table"].(string))
+			respJSON, err := json.Marshal(resp)
+			err = conn.WriteMessage(websocket.TextMessage, []byte(respJSON))
 			if err != nil {
 				http.Error(w, "could not write message", http.StatusInternalServerError)
 				break

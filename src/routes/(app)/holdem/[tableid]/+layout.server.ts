@@ -1,6 +1,6 @@
 
 export const load = ({ locals }) => {
-	if (!locals.pb.authStore.isValid) {
+	if (!locals.userPb.authStore.isValid) {
 	    console.log('test');   
     }
 };

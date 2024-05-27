@@ -1,7 +1,7 @@
 <script lang="ts">
     
-    export let flop: string[] = [];
-
+    export let flop: any;
+    console.log(flop) 
 </script>
 
 <div class="flex flex-row">
