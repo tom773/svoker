@@ -1,38 +1,29 @@
-import PocketBase from 'pocketbase';
-import { serializeNonPOJOs } from '$lib/utils';
-import { redirect } from '@sveltejs/kit';
+//import { serializeNonPOJOs } from '$lib/utils';
+//import { redirect } from '@sveltejs/kit';
+import { newInstance } from '$lib/pocketbase';
+import {ADMIN, PASSWORD} from '$env/static/private';
 
 export const handle = async ({ event, resolve }) => {
-    // New PB instance
-	event.locals.pb = new PocketBase('http://127.0.0.1:8090');
-    // Get all tables
-    event.locals.tables = await event.locals.pb.collection('tables').getFullList({
-        sort: 'tnum',
-    });
-    // Get authStore from cookie
-	event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
+    const adminPb = newInstance();
+    const userPb = newInstance();
+    //sign in
+    await adminPb.admins.authWithPassword(ADMIN, PASSWORD);
+    event.locals.adminPb = adminPb;
+    event.locals.userPb = userPb;
 
+    // Load the authStore from the cookie
+	event.locals.userPb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
     try{
-	    if (event.locals.pb.authStore.isValid) {
-		    await event.locals.pb.collection('users').authRefresh()
-            event.locals.user = serializeNonPOJOs(event.locals.pb.authStore.model);
-
-        }
-	} catch (err){
-		event.locals.pb.authStore.clear();
+        //refresh the auth if it is valid
+        if(!event.locals.userPb.authStore.isValid) await event.locals.userPb.authStore.authRefresh();
+        //spread the model to locals.user to be available in all pages
+        event.locals.user = {...event.locals.userPb.authStore.model};
+    } catch (err) {
+        console.log('error in hooks')
+		event.locals.userPb.authStore.clear();
 	}
-
-    if (event.url.pathname === '/holdem') {
-        if (!event.locals.user) {
-            throw redirect(303, '/signin');
-        }
-    }
-
-    const isProd = process.env.NODE_ENV === 'production' ? true : false;
-	
     const response = await resolve(event);
-	
-    response.headers.set('set-cookie', event.locals.pb.authStore.exportToCookie({ secure: isProd, sameSite: 'Lax', httpOnly: false }));
- 
-	return response;
+    // Set the cookie
+	response.headers.append('set-cookie', event.locals.userPb.authStore.exportToCookie({httpOnly: false}));
+    return response;
 };

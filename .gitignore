@@ -21,3 +21,16 @@ rpkg
 /api/pb_data
 /api/pb_data/*
 utils/pokerutil/target/
+.npmrc
+/api/v2/tmp/*
+/api/v2/tmp
+/api/v2/pb_data
+/api/v2/pb_data/*
+/pb
+/tmp
+/api/v2/air.sh
+/api/v2/.air.toml
+/static/*
+/utils/pokerutil/pkg
+/api/pb_migrations
+

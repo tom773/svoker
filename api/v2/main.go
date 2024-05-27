@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -23,12 +22,8 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 
-	//client.Get("users")
-	//client.Get("v2game")
-	//client.Get("v2gameuser")
-
 	http.HandleFunc("/ws", wsEp)
-	//http.HandleFunc("/health", healthCheck)
+	http.HandleFunc("/health", healthCheck)
 	http.ListenAndServe(":8080", nil)
 }
 
@@ -64,11 +59,10 @@ func wsEp(w http.ResponseWriter, r *http.Request) {
 		case "deal":
 			// Get the D
 			d := deck.NewDeck()
-			fmt.Println("Table ID Requesting a Deck:", request["gameID"])
 			tableID := request["gameID"].(string)
 			client.Deal(d, tableID)
 			// Marshall the D to prepare for response
-			response, err := json.Marshal(d[1:5])
+			response, err := json.Marshal(map[string]interface{}{"Event Fired": "Deal"})
 			if err != nil {
 				conn.WriteMessage(websocket.CloseMessage, []byte(err.Error()))
 				continue
@@ -81,8 +75,17 @@ func wsEp(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "could not write message", http.StatusInternalServerError)
 				break
 			}
+		// WS Health Check
 		case "health":
 			err = conn.WriteMessage(websocket.TextMessage, []byte("OK"))
+			if err != nil {
+				http.Error(w, "could not write message", http.StatusInternalServerError)
+				break
+			}
+		// Reset The Cards
+		case "reset":
+			client.Reset(request["gameID"].(string))
+			err = conn.WriteMessage(websocket.TextMessage, []byte("Resetting"))
 			if err != nil {
 				http.Error(w, "could not write message", http.StatusInternalServerError)
 				break

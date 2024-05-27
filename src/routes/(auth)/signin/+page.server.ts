@@ -5,7 +5,7 @@ export const actions = {
 		const body = Object.fromEntries(await request.formData());
 
 		try {
-			const authdata = await locals.pb.collection('users').authWithPassword(body.email, body.password);
+			await locals.userPb.collection('users').authWithPassword(body.email, body.password);
         } catch (err) {
 			console.log('Error: ', err);
 			throw error(500, 'Something went wrong logging in');

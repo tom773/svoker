@@ -1,5 +1,7 @@
 export const load = ({ locals }) => {
-	if (locals.user) {
+	let userToken = locals.userPb.authStore.token;
+    
+    if (locals.user) {
 		return {
 			user: locals.user
 		};
