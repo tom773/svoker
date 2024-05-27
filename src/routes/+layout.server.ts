@@ -1,17 +1,19 @@
-export const load = ({ locals }) => {
+import type {LayoutServerLoad} from './$types';
 
-	if (locals.user) {
+export type OutputType = { user: object; isLoggedIn: boolean};
+
+export const load: LayoutServerLoad = async ({ locals }) => {
+    
+    const user = locals.user;
+    console.log('user: ', user);
+	if (user) {
 		return {
-            tables: locals.tables,
-			user: locals.user,
-            usertables: locals.usertables
+			user: { user, isLoggedIn: true },
 		};
 	}
-
 	return {
-        tables: locals.tables,
 		user: undefined,
-        usertable: undefined
+        islLoggedIn: false,
 	};
 };
 

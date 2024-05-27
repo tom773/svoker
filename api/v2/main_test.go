@@ -27,7 +27,7 @@ func TestWSRandomness(t *testing.T) {
 
 	for i := 0; i < iterations; i++ {
 		request := map[string]interface{}{
-			"type": "shuffle",
+			"type": "deal",
 		}
 		err = conn.WriteJSON(request)
 		if err != nil {

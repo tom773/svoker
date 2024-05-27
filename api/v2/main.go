@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -22,11 +23,13 @@ var upgrader = websocket.Upgrader{
 
 func main() {
 
-	client.V2connect()
+	//client.Get("users")
+	//client.Get("v2game")
+	//client.Get("v2gameuser")
 
-	//http.HandleFunc("/ws", wsEp)
+	http.HandleFunc("/ws", wsEp)
 	//http.HandleFunc("/health", healthCheck)
-	//http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", nil)
 }
 
 func wsEp(w http.ResponseWriter, r *http.Request) {
@@ -61,15 +64,18 @@ func wsEp(w http.ResponseWriter, r *http.Request) {
 		case "deal":
 			// Get the D
 			d := deck.NewDeck()
-
+			fmt.Println("Table ID Requesting a Deck:", request["gameID"])
+			tableID := request["gameID"].(string)
+			client.Deal(d, tableID)
 			// Marshall the D to prepare for response
-			response, err := json.Marshal(d)
+			response, err := json.Marshal(d[1:5])
 			if err != nil {
 				conn.WriteMessage(websocket.CloseMessage, []byte(err.Error()))
 				continue
 			}
 
 			// Write the response to the WS Client
+			// Maybe we don't send anything back to the client?
 			err = conn.WriteMessage(websocket.TextMessage, response)
 			if err != nil {
 				http.Error(w, "could not write message", http.StatusInternalServerError)

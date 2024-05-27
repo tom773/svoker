@@ -15,25 +15,27 @@ type User struct {
 }
 
 type Game struct {
-	ID           string `json:"id"`
-	Table_Number int    `json:"table_number"`
-	CreatedAt    string `json:"created"`
-	UpdateAt     string `json:"updated"`
+	ID             string `json:"id"`
+	Table_Number   int    `json:"table_number"`
+	CollectionName string `json:"collection_name"`
+	CreatedAt      string `json:"created"`
+	UpdateAt       string `json:"updated"`
 }
 
 type GameUser struct {
-	ID         string   `json:"id"`
-	GameID     string   `json:"game_id"`
-	UserID     string   `json:"user_id"`
-	CardsDealt []string `json:"cards_dealt"`
-	CreatedAt  string   `json:"created"`
-	UpdateAt   string   `json:"updated"`
+	ID             string   `json:"id"`
+	GameID         string   `json:"game_id"`
+	UserID         string   `json:"user_id"`
+	CollectionName string   `json:"collection_name"`
+	CardsDealt     []string `json:"cards_dealt"`
+	CreatedAt      string   `json:"created"`
+	UpdateAt       string   `json:"updated"`
 }
 
 type ApiResponse struct {
-	Page       int    `json:"page"`
-	PerPage    int    `json:"perPage"`
-	TotalItems int    `json:"totalItems"`
-	TotalPages int    `json:"totalPages"`
-	Items      []User `json:"items"`
+	Page       int         `json:"page"`
+	PerPage    int         `json:"perPage"`
+	TotalItems int         `json:"totalItems"`
+	TotalPages int         `json:"totalPages"`
+	Items      interface{} `json:"items"`
 }
