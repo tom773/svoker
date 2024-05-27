@@ -1,26 +1,25 @@
 <h1>Svoker</h1>
 
-Learning Svelte, Networking, Websockets by building a poker game. Aim is to have this be a full fledged poker game with multiplayer support.
+Building a Poker Game. Frontend is Svelte and TS. Backend is Go, with Pocketbase as a DB, and some Rust utility functions.
+This is a large project by my standards, so I have split it up into a few different repo's.
 
 <h3>To Do</h3>
 
 <hr><h4>To Do</h4>
 
-- [ ] Send drawn hands to DB. 
-- [ ] Implement table specific state for WebSockets
-- [ ] WebSockets for game state updates
-- [ ] Chat - WebSockets? 
+- [x] Send drawn hands to DB. 
+- [x] Implement table specific state for WebSockets
+- [x] WebSockets for game state updates
+- [ ] Chat w/ WebSockets 
 - [ ] Betting 
 - [ ] Advanced Hand Evaluation 
-
-<h4>Done</h4>
-
 - [x] Basic card dealing
 - [x] Basic poker hand evaluation
-- [x] Flop, River and Turn Simulations 
+- [ ] Flop, River and Turn Simulations 
 - [x] Cleaner UI
-- [x] SSE for seat management. Some cleanup to do but API is working. 
+- [x] SSE for seat management. 
 - [x] WebSockets for dealing
+- [ ] Refactor to use only v2 of API
+- [ ] Ditch Pocketbase. Write my own version.
+- [ ] Continue to rewrite README.md
 
-<h4><strong>Note to self:</strong> You're onto something with unmarshalling DB tables into Go structs. We could use this persist game state and still use websockets to trigger events and
-hydration of client tables.</h4>
