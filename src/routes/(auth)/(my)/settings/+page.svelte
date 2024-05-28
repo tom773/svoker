@@ -1,6 +1,8 @@
 <script lang="ts">
     import Profile from './(profile)/Profile.svelte';
     import Money from './(money)/Money.svelte';
+    import Security from './(security)/Security.svelte';
+    import Support from './(support)/Support.svelte';
     import { pagey } from '$lib/stores/user';
     export let data; 
 </script>
@@ -10,11 +12,11 @@
     {#if $pagey === "profile"}
         <Profile data={data}/>
     {:else if $pagey === "security"}
-        <p>Page not found</p>
+        <Security data={data} />
     {:else if $pagey === "payment"}
         <Money data={data} /> 
     {:else if $pagey === "support"}
-        <p>Page not found</p>
+        <Support data={data} />
     {:else}
         <Profile data={data}/>
     {/if}

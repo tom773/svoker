@@ -1,4 +1,3 @@
-
 <script lang="ts">
     import { Button } from "$lib/components/ui/button/index";
     import * as Card from "$lib/components/ui/card/index";
@@ -12,7 +11,7 @@
       <Card.Header>
         <Card.Title>Deposit</Card.Title>
         <Card.Description>
-            Deposit money into your account.<br><strong>Current Balance:</strong>&nbsp;${numberWithCommas(data?.user?.balance)}
+            Deposit money into your account.<br><strong>Current Balance:</strong>&nbsp;${numberWithCommas(data?.user.user.balance)}
         </Card.Description>
       </Card.Header>
       <form method="POST" action="?/amt" class="inline-flex flex-row items-center">

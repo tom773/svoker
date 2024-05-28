@@ -1,7 +1,4 @@
 import { error, redirect } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
-import { serializeNonPOJOs } from '$lib/utils';
-import type { PageServerLoad } from './$types';
 
 export const actions = {
     addToTable: async ({request, locals}) => {
@@ -25,6 +22,7 @@ export const actions = {
                 "players-": locals.user.id,
                 "currentplayers-": 1,
             });
+            locals.tables = tabup;
             } catch (err) {
             console.log(err);
             throw error(500, 'You probably made a typo');

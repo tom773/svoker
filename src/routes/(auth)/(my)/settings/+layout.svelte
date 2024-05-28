@@ -6,7 +6,6 @@
     import { ArrowLeft } from 'lucide-svelte';
         
     export let data;
-    console.log(data);
 </script>
 <div>
     <div class="back absolute top-3 left-3 z-10 w-10">

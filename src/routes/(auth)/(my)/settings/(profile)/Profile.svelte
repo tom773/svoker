@@ -1,22 +1,24 @@
 <script lang="ts">
-    import { getImageURL } from "$lib/utils";
+    // Components
     import { Button } from "$lib/components/ui/button/index";
-    import * as Card from "$lib/components/ui/card/index";
     import { Input } from "$lib/components/ui/input/index";
-    export let data: any;
-    import { invalidateAll } from "$app/navigation";
-    import * as Avatar from "$lib/components/ui/avatar/index";
     import { Pencil } from "lucide-svelte";
-    import { onMount } from "svelte";
     import { LoaderCircle } from "lucide-svelte";
+    import { CircleCheckBig } from 'lucide-svelte'; 
+    import * as Card from "$lib/components/ui/card/index";
+    import * as Avatar from "$lib/components/ui/avatar/index";
+    // Functions
+    import { getImageURL } from "$lib/utils";
+    import { invalidateAll } from "$app/navigation";
+    import { onMount } from "svelte";
     import { applyAction, enhance } from "$app/forms";
     import { fade } from "svelte/transition";
-    import { CircleCheckBig } from 'lucide-svelte';
+    // Exported Variables
+    export let data: any;
+    let avatarUp = false;
+    let avatarInput: any;
     
-    export let avatarUp = false;
-    export let avatarInput: any;
     let loading: boolean;
-
     $: loading = false;
     
     onMount(() => {
@@ -61,7 +63,6 @@
         };
         
     };
-    
 
 </script>
 <div class="grid grid-cols-2 gap-4">
@@ -69,7 +70,7 @@
       <Card.Header>
         <Card.Title>Display Name</Card.Title>
         <Card.Description>
-          Used to identify you by an alias such as "TheAssMan".<br><strong>Current:</strong> {data?.user?.username}
+          Used to identify you by an alias such as "TheAssMan".<br><strong>Current:</strong> {data.user.user.username}
         </Card.Description>
       </Card.Header>
       <form method="POST" action="?/username">
@@ -85,7 +86,7 @@
       <Card.Header>
         <Card.Title>Update Email</Card.Title>
         <Card.Description>
-          Update your email address.<br><strong>Current:</strong> {data?.user?.email}
+          Update your email address.<br><strong>Current:</strong> {data.user.user.email}
         </Card.Description>
       </Card.Header>
     <form method="POST" action="?/email">
@@ -106,7 +107,7 @@
             <label for="avatar" class="text-sm items-center justify-center text-center ">
               <Avatar.Root class="w-full h-24 items-center justify-center hover:opacity-75 hover:cursor-pointer hover:brightness-75">
                     <Pencil style="z-index:100" fill="#000000" class="absolute w-8 h-8 hidden hover:block" />
-                    <Avatar.Image id="avatar-preview" class="w-24 h-24 border-2 border-black hover:border-gray-600 rounded-full" src={getImageURL(data?.user.id, data?.user?.avatar)} />
+                    <Avatar.Image id="avatar-preview" class="w-24 h-24 border-2 border-black hover:border-gray-600 rounded-full" src={getImageURL(data?.user.user.id, data?.user.user.avatar)} />
               </Avatar.Root>
               <p class="hover:cursor-pointer">Click to change</p>
             </label>

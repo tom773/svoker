@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,14 +11,12 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
-	"github.com/tom773/svoker/api/game"
-	weby "github.com/tom773/svoker/api/ws"
 )
 
 type Request struct {
 	RecordID    string `json:"recordid"`
 	TableID     string `json:"tableid"`
-	ID          string `json:"userid"`
+	UserID      string `json:"userid"`
 	GameID      string `json:"gameid"`
 	GametableID string `json:"gametableid"`
 }
@@ -27,37 +26,36 @@ func SetupRoutes() {
 	var request Request
 
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.GET("/ws", func(c echo.Context) error {
-			weby.HandleConnection(c.Response().Writer, c.Request(), game.GameState())
-			return nil
-		})
 		e.Router.GET("/*", apis.StaticDirectoryHandler(os.DirFS("./pb_public"), false))
+		// Pages that hit this:
 		e.Router.POST("/api/basicuser", func(c echo.Context) error {
 
 			if err := c.Bind(&request); err != nil {
 				return c.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
 			}
 			response := map[string]interface{}{
-				"user": GetUserInfo(*app, request.ID),
+				"user": GetUserInfo(*app, request.UserID),
 			}
 
 			return c.JSON(http.StatusOK, response)
 		})
+		// Pages that hit this:
 		e.Router.POST("/api/avatar", func(c echo.Context) error {
 			if err := c.Bind(&request); err != nil {
-				return c.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+				return c.JSON(400, map[string]interface{}{"Error Binding": err.Error()})
 			}
 			response := map[string]interface{}{
-				"avatar": GetAvatar(*app, request.ID),
+				"avatar": GetAvatar(*app, request.UserID),
 			}
 			return c.JSON(http.StatusOK, response)
 		})
-		e.Router.POST("/api/hand", func(c echo.Context) error {
+		// Pages that hit this: /holdem/tableid
+		e.Router.POST("/api/table/avatar", func(c echo.Context) error {
 			if err := c.Bind(&request); err != nil {
-				return c.JSON(http.StatusBadRequest, map[string]interface{}{"error": err.Error()})
+				return c.JSON(400, map[string]interface{}{"Error Binding": err.Error()})
 			}
-			response := GetUserHand(*app, request.ID, request.TableID)
-
+			fmt.Println("TableID: ", request.TableID)
+			response := getTablePlayers(*app, request.TableID)
 			return c.JSON(http.StatusOK, response)
 		})
 		return nil
@@ -85,15 +83,37 @@ type GameInfoResponse struct {
 	Drawn       string `db:"drawn" json:"drawn"`
 }
 
-func GetAvatar(app pocketbase.PocketBase, id string) User {
+func GetAvatar(app pocketbase.PocketBase, id string) string {
 	user := User{}
-	err := app.Dao().DB().NewQuery("SELECT id, avatar FROM users WHERE id = {:id}").Bind(dbx.Params{"id": id}).One(&user)
+	fmt.Println("ID: ", id)
+	err := app.Dao().DB().NewQuery("SELECT avatar FROM users WHERE id = {:id}").Bind(dbx.Params{"id": id}).One(&user)
 	if err != nil {
 		panic(err)
 	}
-	return user
+	return user.Avatar
 }
 
+// As much as I love websockets, this is just without a doubt the easiest
+// way to get the complex data from the database.
+func getTablePlayers(app pocketbase.PocketBase, tableid string) []User {
+
+	users := []User{}
+
+	err := app.Dao().DB().NewQuery(
+		`SELECT users.id, users.username, users.avatar, users.balance 
+         FROM users 
+         INNER JOIN v2tables 
+         ON users.id IN (SELECT value FROM json_each(v2tables.players)) 
+         WHERE v2tables.id = {:tableid}`).
+		Bind(dbx.Params{"tableid": tableid}).
+		All(&users)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return users
+}
 func GetUserInfo(app pocketbase.PocketBase, id string) User {
 	user := User{}
 
