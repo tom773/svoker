@@ -1,6 +1,5 @@
 <script lang="ts">
     export let drawn: any;
-    console.log(drawn)
 </script>
 
 <div class="usercard">

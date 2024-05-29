@@ -2,41 +2,32 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/tom773/svoker/api/deck"
+	"github.com/tom773/svoker/api/hub"
 	"github.com/tom773/svoker/api/models"
 	"github.com/tom773/svoker/api/utils"
 )
 
 // This sends the full game to the server, which I think works better than having the server handle actions
-func Deal(d deck.Deck, t string) {
+func Deal(d deck.Deck, t string, h *hub.Hub) map[string]interface{} {
 	client := initClient()
-
-	resp, err := client.R().Get("http://localhost:8090/api/collections/v2gameuser/records?filter(gameID='" + t + "'))")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var apiResponse models.ApiResponse
-	err = json.Unmarshal(resp.Body(), &apiResponse)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	ctp := (apiResponse.TotalItems) * 2
-
-	players := returnRaw(apiResponse)
+	players := h.Clients
 	counter := 0
-	for p := range players {
+	playerhands := make(map[string]interface{})
+	for _, p := range players {
+		if p.ID == "anon" || p.ID == "" {
+			continue
+		}
 		handPayload := map[string]interface{}{
 			"hand": []interface{}{d[counter], d[counter+1]},
 		}
-
-		id := players[p]["id"].(string)
+		playerhands[p.ID] = handPayload
 		handJSON, err := json.Marshal(handPayload)
-		_, err = client.R().SetBody(handJSON).Patch("http://localhost:8090/api/collections/v2gameuser/records/" + id)
+		_, err = client.R().SetBody(handJSON).Patch("http://localhost:8090/api/collections/v2gameuser/records/" + p.ID)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -44,7 +35,7 @@ func Deal(d deck.Deck, t string) {
 	}
 
 	tablePayload := map[string]interface{}{
-		"deck": d[ctp:],
+		"deck": d[len(players)*2:],
 	}
 	tableJSON, err := json.Marshal(tablePayload)
 	if err != nil {
@@ -54,6 +45,8 @@ func Deal(d deck.Deck, t string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	return playerhands
 }
 
 func Get_(coll string, filter string) []map[string]interface{} {
@@ -82,7 +75,14 @@ func Get_(coll string, filter string) []map[string]interface{} {
 
 	return returnRaw(apiResponse)
 }
-
+func Showdown(t string) map[string]interface{} {
+	//client := initClient()
+	table := Get_("v2game", "id='"+t+"'")
+	response := map[string]interface{}{
+		"deck": table[0]["deck"],
+	}
+	return response
+}
 func Reset(t string) {
 	client := initClient()
 	empty := map[string]interface{}{
@@ -114,6 +114,7 @@ func Reset(t string) {
 			log.Fatal(err)
 		}
 	}
+	fmt.Println("Resetting")
 }
 
 func returnRaw(response models.ApiResponse) []map[string]interface{} {

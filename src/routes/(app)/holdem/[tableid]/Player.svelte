@@ -1,14 +1,12 @@
 <script lang="ts">
     import * as Avatar from '$lib/components/ui/avatar';
     export let data: any;
-    export let tableid: any;
     import { onMount } from 'svelte';
     import { numberWithCommas, getImageURL } from '$lib/utils';
     import { LoaderCircle } from 'lucide-svelte';
     import { fade } from 'svelte/transition';
 
     let socket: WebSocket;
-    console.log(data.tablePlayers);
     
     onMount(async () => {
         socket = new WebSocket('ws://localhost:8080/ws/user');

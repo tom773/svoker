@@ -2,9 +2,16 @@
     import '../../../../main.css';
     import Hero from './Hero.svelte';
     import Table from './Table.svelte';
-    export let data: any;
     import { page } from '$app/stores';
+    import { onMount } from 'svelte'; 
+    import { initWS } from '$lib/stores/websocket';
+
+    export let data: any;
     const tableid = $page.params.tableid;
+    
+    onMount(() => {
+        initWS("ws://localhost:8080/ws?id="+data.user.id);
+    });
 </script>
 
 <div class="hero">

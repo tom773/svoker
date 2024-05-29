@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/tom773/svoker/api/client"
 	"github.com/tom773/svoker/api/deck"
+	"github.com/tom773/svoker/api/hub"
 )
 
 var upgrader = websocket.Upgrader{
@@ -15,29 +16,49 @@ var upgrader = websocket.Upgrader{
 		return true
 	},
 }
+var h *hub.Hub
 
 // Comments on this file will be overly verbose because
 // I have no idea what the hell is going on with all these
 // error as value checks ruining my code flow
 
 func InitWS() {
+	h = hub.NewHub()
+	go h.Run()
 
 	http.HandleFunc("/ws", wsEp)
 	http.HandleFunc("/ws/user", wsuEp)
 	http.HandleFunc("/health", healthCheck)
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 }
 
+// -- End Logic Here, Move to new file once functional
+
 func wsEp(w http.ResponseWriter, r *http.Request) {
+
+	tokenString := r.URL.Query().Get("id")
+	if tokenString == "" {
+		tokenString = "anon"
+	}
 	// Accept the WS connection
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		http.Error(w, "could not upgrade connection", http.StatusInternalServerError)
 	}
-	defer conn.Close()
+	// Hub Stuff For Client Management?
+	client_ := &hub.Client{
+		ID:   tokenString,
+		Conn: conn,
+		Send: make(chan []byte, 256),
+		Hub:  h,
+	}
+
+	h.Register <- client_
+
+	go client_.WritePump()
 
 	// Response Loop Starts
 	for {
@@ -46,7 +67,7 @@ func wsEp(w http.ResponseWriter, r *http.Request) {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
 			conn.WriteMessage(websocket.CloseMessage, []byte(err.Error()))
-			return
+			break
 		}
 		// Making a map for the request so I can unmarshall it
 		request := make(map[string]interface{})
@@ -54,40 +75,53 @@ func wsEp(w http.ResponseWriter, r *http.Request) {
 		// Unmarshall the request
 		err = json.Unmarshal(message, &request)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			continue
 		}
 
 		// All WS messages, in and out, go through this switch statement.
 		switch request["type"] {
-
 		case "deal":
 			// Get the D
 			d := deck.NewDeck()
 			tableID := request["gameID"].(string)
-			client.Deal(d, tableID)
-			// Marshall the D to prepare for response
-			response, err := json.Marshal(map[string]interface{}{"Event Fired": "Deal"})
+			hand := client.Deal(d, tableID, h)
+
+			// Marshall the D
+			handJSON, err := json.Marshal(hand)
 			if err != nil {
 				conn.WriteMessage(websocket.CloseMessage, []byte(err.Error()))
 				continue
 			}
-
-			// Write the response to the WS Client
-			// Maybe we don't send anything back to the client?
-			err = conn.WriteMessage(websocket.TextMessage, response)
+			// Unmarshall the D back into an interface for some reason
+			var handsMap map[string]interface{}
+			err = json.Unmarshal(handJSON, &handsMap)
 			if err != nil {
-				http.Error(w, "could not write message", http.StatusInternalServerError)
-				break
+				conn.WriteMessage(websocket.CloseMessage, []byte(err.Error()))
+				continue
+			}
+			for userID, handData := range handsMap {
+				// Marshal the D AGAIN
+				handDataJSON, err := json.Marshal(handData)
+				if err != nil {
+					conn.WriteMessage(websocket.CloseMessage, []byte(err.Error()))
+					continue
+				}
+				h.ToClient(userID, handDataJSON)
 			}
 		// WS Health Check
 		case "health":
-			err = conn.WriteMessage(websocket.TextMessage, []byte("OK"))
+			err = conn.WriteMessage(websocket.TextMessage, []byte("ok"))
 			if err != nil {
 				http.Error(w, "could not write message", http.StatusInternalServerError)
 				break
 			}
 		case "showdown":
-			err = conn.WriteMessage(websocket.TextMessage, []byte("showdown"))
+			deck := client.Showdown(request["gameID"].(string))
+			deckJSON, err := json.Marshal(deck)
+			for _, player := range h.Clients {
+				h.ToClient(player.ID, deckJSON)
+			}
 			if err != nil {
 				http.Error(w, "could not write message", http.StatusInternalServerError)
 				break
@@ -95,7 +129,13 @@ func wsEp(w http.ResponseWriter, r *http.Request) {
 		// Reset The Cards
 		case "reset":
 			client.Reset(request["gameID"].(string))
-			err = conn.WriteMessage(websocket.TextMessage, []byte("Resetting"))
+			reset := map[string]string{
+				"reset": "reset",
+			}
+			resetJSON, err := json.Marshal(reset)
+			for _, player := range h.Clients {
+				h.ToClient(player.ID, resetJSON)
+			}
 			if err != nil {
 				http.Error(w, "could not write message", http.StatusInternalServerError)
 				break
@@ -105,7 +145,6 @@ func wsEp(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
-
 func wsuEp(w http.ResponseWriter, r *http.Request) {
 	// Accept the WS connection
 	conn, err := upgrader.Upgrade(w, r, nil)
@@ -129,7 +168,7 @@ func wsuEp(w http.ResponseWriter, r *http.Request) {
 		// Unmarshall the request
 		err = json.Unmarshal(message, &request)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 
 		// All WS messages, in and out, go through this switch statement.

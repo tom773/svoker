@@ -97,7 +97,7 @@ func GetAvatar(app pocketbase.PocketBase, id string) string {
 func getTablePlayers(app pocketbase.PocketBase, tableid string) []User {
 
 	users := []User{}
-
+	// Finest peice of Sqeual I've written
 	err := app.Dao().DB().NewQuery(
 		`SELECT users.id, users.username, users.avatar, users.balance 
          FROM users 
