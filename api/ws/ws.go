@@ -1,4 +1,4 @@
-package main
+package ws
 
 import (
 	"encoding/json"
@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/tom773/casgo/client"
-	"github.com/tom773/casgo/deck"
+	"github.com/tom773/svoker/api/client"
+	"github.com/tom773/svoker/api/deck"
 )
 
 var upgrader = websocket.Upgrader{
@@ -20,7 +20,7 @@ var upgrader = websocket.Upgrader{
 // I have no idea what the hell is going on with all these
 // error as value checks ruining my code flow
 
-func main() {
+func InitWS() {
 
 	http.HandleFunc("/ws", wsEp)
 	http.HandleFunc("/ws/user", wsuEp)

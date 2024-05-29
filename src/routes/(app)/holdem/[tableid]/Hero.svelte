@@ -7,10 +7,10 @@
     let tnum = table.tnum;
 </script>
 
-<div class="landing">
+<div class="landing items-center">
     <Button href="/holdem" variant="ghost" class="text-3xl"><ArrowLeft /></Button>
     
-    <p class="text-3xl">Welcome to Table {tnum}!</p>
+    <p class="text-2xl font-bold">Table {tnum}</p>
 </div>
 
 <style>

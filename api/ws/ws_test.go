@@ -1,4 +1,4 @@
-package main
+package ws
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gorilla/websocket"
-	"github.com/tom773/casgo/deck"
+	"github.com/tom773/svoker/api/deck"
 )
 
 func TestWSRandomness(t *testing.T) {

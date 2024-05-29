@@ -3,10 +3,13 @@ module github.com/tom773/svoker/api
 go 1.22.0
 
 require (
+	github.com/go-resty/resty/v2 v2.13.1
 	github.com/gorilla/websocket v1.5.1
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v5 v5.0.0-20230722203903-ec5b858dab61
 	github.com/pocketbase/dbx v1.10.1
 	github.com/pocketbase/pocketbase v0.22.12
+	github.com/tom773/casgo v0.0.0-20240527095647-f1342f87b7fc
 )
 
 require (

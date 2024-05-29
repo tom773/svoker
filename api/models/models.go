@@ -1,44 +1,42 @@
 package models
 
-import (
-	"github.com/pocketbase/dbx"
-	"github.com/pocketbase/pocketbase"
-)
-
-type Table struct {
-	ID             string   `json:"id"`
-	Tnum           int      `json:"tnum"`
-	MaxPlayers     int      `json:"maxplayers"`
-	CurrentPlayers int      `json:"currentplayers"`
-	Players        []string `json:"players"`
-}
-
-type Gametable struct {
-	ID    string   `json:"id"`
-	User  string   `json:"user"`
-	Table string   `json:"table"`
-	Cards []string `json:"cards"`
+type User struct {
+	Avatar          string `json:"avatar"`
+	Balance         int    `json:"balance"`
+	CollectionID    string `json:"collectionId"`
+	CollectionName  string `json:"collectionName"`
+	Created         string `json:"created"`
+	EmailVisibility bool   `json:"emailVisibility"`
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	Updated         string `json:"updated"`
+	Username        string `json:"username"`
+	Verified        bool   `json:"verified"`
 }
 
 type Game struct {
-	ID           string   `json:"id"`
-	Table        string   `json:"table"`
-	Drawn        []string `json:"drawn"`
-	Action       string   `json:"action"`
-	Pot          int      `json:"pot"`
-	ActionPlayer string   `json:"actionuser"`
+	ID             string `json:"id"`
+	Table_Number   int    `json:"table_number"`
+	CollectionName string `json:"collection_name"`
+	Table          string `json:"table_name"`
+	CreatedAt      string `json:"created"`
+	UpdateAt       string `json:"updated"`
 }
 
-func PocketBaseClient() *pocketbase.PocketBase {
-	pb := pocketbase.New()
-	return pb
+type GameUser struct {
+	ID             string   `json:"id"`
+	GameID         string   `json:"game_id"`
+	UserID         string   `json:"user_id"`
+	CollectionName string   `json:"collection_name"`
+	CardsDealt     []string `json:"cards_dealt"`
+	CreatedAt      string   `json:"created"`
+	UpdateAt       string   `json:"updated"`
 }
 
-func GetTable(tableid string) (Table, error) {
-	pb := PocketBaseClient()
-	table := Table{}
-	err := pb.Dao().DB().NewQuery("SELECT * FROM table WHERE id = {:id}").Bind(dbx.Params{"id": tableid}).One(&table)
-	return table, err
+type ApiResponse struct {
+	Page       int         `json:"page"`
+	PerPage    int         `json:"perPage"`
+	TotalItems int         `json:"totalItems"`
+	TotalPages int         `json:"totalPages"`
+	Items      interface{} `json:"items"`
 }
-
-// This needs work

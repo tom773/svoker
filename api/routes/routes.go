@@ -54,7 +54,6 @@ func SetupRoutes() {
 			if err := c.Bind(&request); err != nil {
 				return c.JSON(400, map[string]interface{}{"Error Binding": err.Error()})
 			}
-			fmt.Println("TableID: ", request.TableID)
 			response := getTablePlayers(*app, request.TableID)
 			return c.JSON(http.StatusOK, response)
 		})

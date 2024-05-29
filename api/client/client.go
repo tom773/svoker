@@ -5,9 +5,9 @@ import (
 	"log"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/tom773/casgo/deck"
-	"github.com/tom773/casgo/models"
-	"github.com/tom773/casgo/utils"
+	"github.com/tom773/svoker/api/deck"
+	"github.com/tom773/svoker/api/models"
+	"github.com/tom773/svoker/api/utils"
 )
 
 // This sends the full game to the server, which I think works better than having the server handle actions
